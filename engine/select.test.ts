@@ -5,6 +5,7 @@ import { selectExercise } from "./select.js";
 function ex(id: string, tier: number, language: "python" | "javascript" = "python"): Exercise {
   return {
     id,
+    kind: "write",
     axis: "syntax-recall",
     language,
     tier,
@@ -18,7 +19,20 @@ function ex(id: string, tier: number, language: "python" | "javascript" = "pytho
   };
 }
 
-const bank = [ex("sr-py-001", 1), ex("sr-py-002", 2), ex("sr-py-003", 2), ex("sr-js-001", 1, "javascript")];
+const outlineEx: Exercise = {
+  id: "dec-any-001",
+  kind: "outline",
+  axis: "decomposition",
+  language: "any",
+  tier: 1,
+  title: "outline",
+  prompt: "p",
+  softTimeLimitSeconds: 420,
+  testTimeoutMs: 10_000,
+  rubric: ["a"],
+};
+
+const bank = [ex("sr-py-001", 1), ex("sr-py-002", 2), ex("sr-py-003", 2), ex("sr-js-001", 1, "javascript"), outlineEx];
 
 describe("selectExercise", () => {
   it("prefers the current tier", () => {
@@ -44,6 +58,11 @@ describe("selectExercise", () => {
   it("filters by language", () => {
     const pick = selectExercise(bank, "syntax-recall", 1, [], "javascript", () => 0);
     expect(pick?.id).toBe("sr-js-001");
+  });
+
+  it("language-agnostic exercises match any language filter", () => {
+    const pick = selectExercise(bank, "decomposition", 1, [], "javascript", () => 0);
+    expect(pick?.id).toBe("dec-any-001");
   });
 
   it("returns undefined for an axis with no exercises", () => {

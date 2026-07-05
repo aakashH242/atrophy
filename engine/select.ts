@@ -12,8 +12,11 @@ export function selectExercise(
   language?: Language,
   random: () => number = Math.random,
 ): Exercise | undefined {
+  // language-agnostic exercises (e.g. outlines, language "any") match every filter
   const pool = bank.filter(
-    (ex) => ex.axis === axis && (language === undefined || ex.language === language),
+    (ex) =>
+      ex.axis === axis &&
+      (language === undefined || ex.language === language || ex.language === "any"),
   );
   if (pool.length === 0) return undefined;
 
