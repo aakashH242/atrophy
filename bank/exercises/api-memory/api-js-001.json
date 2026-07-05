@@ -1,0 +1,12 @@
+{
+  "id": "api-js-001",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "First match wins",
+  "prompt": "Fill the blank: one array method returns the first element matching the predicate\n(not its index, not a filtered array).",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const nums = [3, -1, 7, -5];\nconst firstNegative = nums.____((n) => n < 0);\n// firstNegative === -1",
+  "acceptedAnswers": ["find"]
+}

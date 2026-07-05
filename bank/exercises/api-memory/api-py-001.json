@@ -1,0 +1,12 @@
+{
+  "id": "api-py-001",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "python",
+  "tier": 1,
+  "title": "Sort by length",
+  "prompt": "Fill the blank so the words sort shortest-to-longest. No autocomplete to save you now.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "words = [\"banana\", \"fig\", \"apple\"]\nresult = sorted(words, key=____)\n# result == ['fig', 'apple', 'banana']",
+  "acceptedAnswers": ["len"]
+}

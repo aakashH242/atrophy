@@ -1,0 +1,12 @@
+{
+  "id": "api-py-002",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "python",
+  "tier": 2,
+  "title": "Count without KeyError",
+  "prompt": "Fill the blank: one dict method makes this counting loop safe for unseen keys.",
+  "softTimeLimitSeconds": 90,
+  "snippet": "counts = {}\nfor word in words:\n    counts[word] = counts.____(word, 0) + 1",
+  "acceptedAnswers": ["get"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "api-py-004",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "python",
+  "tier": 3,
+  "title": "Memoize the classic",
+  "prompt": "Fill the blank — the same functools decorator name goes in both blanks\n(the one that accepts maxsize).",
+  "softTimeLimitSeconds": 120,
+  "snippet": "from functools import ____\n\n@____(maxsize=None)\ndef fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)",
+  "acceptedAnswers": ["lru_cache"]
+}

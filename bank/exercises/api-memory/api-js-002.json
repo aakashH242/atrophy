@@ -1,0 +1,12 @@
+{
+  "id": "api-js-002",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 2,
+  "title": "Walk an object's pairs",
+  "prompt": "Fill the blank: the Object static method that yields [key, value] pairs.",
+  "softTimeLimitSeconds": 90,
+  "snippet": "const user = { name: \"Asha\", role: \"dev\" };\nfor (const [key, value] of Object.____(user)) {\n  console.log(key, value);\n}",
+  "acceptedAnswers": ["entries"]
+}
