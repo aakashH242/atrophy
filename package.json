@@ -1,0 +1,39 @@
+{
+  "name": "atrophy",
+  "version": "0.1.0",
+  "description": "Measure what your brain is losing while AI does your work. Unaided-skill baselines, decay curves, and scheduled reliance drills for developers.",
+  "type": "module",
+  "bin": {
+    "atrophy": "./dist/cli/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx cli/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "skill-decay",
+    "deliberate-practice",
+    "ai-reliance",
+    "drills",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "commander": "^14.0.0",
+    "picocolors": "^1.1.1",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}
