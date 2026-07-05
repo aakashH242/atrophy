@@ -1,0 +1,19 @@
+{
+  "id": "dbg-js-001",
+  "kind": "fix",
+  "axis": "debugging",
+  "language": "javascript",
+  "tier": 1,
+  "title": "findMax hates negative numbers",
+  "prompt": "findMax(nums) should return the largest number in the array, or null for an empty array.\nIt works in every demo… until someone passes all-negative numbers.\nFind and fix the bug.",
+  "functionName": "findMax",
+  "starterCode": "function findMax(nums) {\n  let max = 0;\n  for (const n of nums) {\n    if (n > max) max = n;\n  }\n  return max;\n}\n\nmodule.exports = { findMax };\n",
+  "softTimeLimitSeconds": 300,
+  "tests": [
+    { "args": [[3, 7, 2]], "expected": 7 },
+    { "args": [[-5, -2, -9]], "expected": -2 },
+    { "args": [[]], "expected": null },
+    { "args": [[0]], "expected": 0 },
+    { "args": [[-1]], "expected": -1 }
+  ]
+}

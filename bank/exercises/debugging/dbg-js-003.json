@@ -1,0 +1,19 @@
+{
+  "id": "dbg-js-003",
+  "kind": "fix",
+  "axis": "debugging",
+  "language": "javascript",
+  "tier": 2,
+  "title": "removeValue skips its twin",
+  "prompt": "removeValue(arr, value) should return a copy of arr with EVERY occurrence of value removed.\nSingle occurrences vanish fine, but consecutive duplicates survive.\nFind and fix the bug (the classic kind).",
+  "functionName": "removeValue",
+  "starterCode": "function removeValue(arr, value) {\n  const copy = [...arr];\n  for (let i = 0; i < copy.length; i++) {\n    if (copy[i] === value) {\n      copy.splice(i, 1);\n    }\n  }\n  return copy;\n}\n\nmodule.exports = { removeValue };\n",
+  "softTimeLimitSeconds": 420,
+  "tests": [
+    { "args": [[1, 2, 3], 2], "expected": [1, 3] },
+    { "args": [[2, 2, 2, 3], 2], "expected": [3] },
+    { "args": [[5, 2, 2, 5], 2], "expected": [5, 5] },
+    { "args": [[], 1], "expected": [] },
+    { "args": [[4, 4], 4], "expected": [] }
+  ]
+}

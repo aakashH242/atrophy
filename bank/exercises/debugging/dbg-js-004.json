@@ -1,0 +1,19 @@
+{
+  "id": "dbg-js-004",
+  "kind": "fix",
+  "axis": "debugging",
+  "language": "javascript",
+  "tier": 3,
+  "title": "flattenDepth ignores its depth",
+  "prompt": "flattenDepth(arr, depth) should flatten nested arrays exactly `depth` levels deep\n(depth 0 = unchanged), like Lodash's _.flattenDepth. Instead it flattens everything, always.\nFind and fix the bug.",
+  "functionName": "flattenDepth",
+  "starterCode": "function flattenDepth(arr, depth) {\n  const out = [];\n  for (const item of arr) {\n    if (Array.isArray(item) && depth > 0) {\n      out.push(...flattenDepth(item, depth));\n    } else {\n      out.push(item);\n    }\n  }\n  return out;\n}\n\nmodule.exports = { flattenDepth };\n",
+  "softTimeLimitSeconds": 600,
+  "tests": [
+    { "args": [[1, [2, [3]]], 1], "expected": [1, 2, [3]] },
+    { "args": [[1, [2]], 0], "expected": [1, [2]] },
+    { "args": [[[1], [2, [3, [4]]]], 2], "expected": [1, 2, 3, [4]] },
+    { "args": [[], 5], "expected": [] },
+    { "args": [[1, 2], 1], "expected": [1, 2] }
+  ]
+}

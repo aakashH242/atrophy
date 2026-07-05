@@ -1,0 +1,19 @@
+{
+  "id": "dbg-js-002",
+  "kind": "fix",
+  "axis": "debugging",
+  "language": "javascript",
+  "tier": 2,
+  "title": "titleCase can't calm down",
+  "prompt": "titleCase(sentence) should capitalize the first letter of every space-separated word\nand lowercase the rest of each word. \"hELLO wORLD\" must become \"Hello World\" —\nit doesn't. Find and fix the bug.",
+  "functionName": "titleCase",
+  "starterCode": "function titleCase(sentence) {\n  return sentence\n    .split(\" \")\n    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))\n    .join(\" \");\n}\n\nmodule.exports = { titleCase };\n",
+  "softTimeLimitSeconds": 300,
+  "tests": [
+    { "args": ["hello world"], "expected": "Hello World" },
+    { "args": ["hELLO wORLD"], "expected": "Hello World" },
+    { "args": ["a"], "expected": "A" },
+    { "args": [""], "expected": "" },
+    { "args": ["JAVASCRIPT rocks"], "expected": "Javascript Rocks" }
+  ]
+}
