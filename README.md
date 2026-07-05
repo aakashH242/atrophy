@@ -6,14 +6,15 @@ AI assistance makes you feel ~20% faster while comprehension drops ~17% — and 
 
 Atrophy gives you a personal **unaided-skill baseline** and a **decay curve** — like a fitness app's resting heart rate, but for your coding brain. Short scheduled drills (5–10 min, AI off) are the workout; the chart is the reason you stay.
 
-## Status: M0 skeleton
+## Status: M1 — all five axes live
 
-- ✅ `atrophy drill` — one unaided micro-drill: temp dir + `AI-OFF.lock`, opens `$EDITOR`, auto-graded by hidden tests in a sandboxed subprocess, retry loop, soft time limits (going over shrinks the score; nothing explodes)
-- ✅ `atrophy baseline` — one drill per available axis to seed your profile
-- ✅ `atrophy stats` — per-axis Elo rating ± confidence (RD), rep count, recency, freshness
+- ✅ `atrophy drill` — one unaided micro-drill; auto-picks your most-overdue axis. Temp dir + `AI-OFF.lock`, opens `$EDITOR`, soft time limits (going over shrinks the score; nothing explodes)
+- ✅ **Five drill kinds:** write-from-spec and fix-the-planted-bug (auto-graded by hidden tests in a sandboxed subprocess, retry loop) · predict-the-output (ground truth computed by actually running the snippet) · stdlib fill-in-the-blank · design outlines self-scored against a rubric
+- ✅ 31 exercises: syntax-recall (6), debugging (8), code-reading (8), api-memory (6), decomposition (3) — Python + JavaScript, tiers 1–3
+- ✅ `atrophy baseline` — one drill per axis to seed your profile (~25 min)
+- ✅ `atrophy stats` — per-axis Elo rating ± confidence (RD), recency, freshness; nags when you've coasted >3 days
 - ✅ `atrophy export` — JSON dump for the upcoming dashboard
-- ✅ Syntax-recall axis with 6 seed exercises (Python + JavaScript)
-- 🔜 Debugging, code-reading, API-memory, decomposition axes · decay dashboard · AI-on vs AI-off divergence chart
+- 🔜 M2: decay dashboard · AI-on vs AI-off divergence chart (drill monthly with `--ai-on` to feed it)
 
 ## Install & run
 
