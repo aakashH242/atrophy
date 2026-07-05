@@ -1,0 +1,11 @@
+{
+  "id": "cr-js-002",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "javascript",
+  "tier": 2,
+  "title": "Filter, map, slice",
+  "prompt": "Read the snippet. Predict its exact stdout.\n(JSON.stringify output has no spaces.)",
+  "softTimeLimitSeconds": 180,
+  "snippet": "const nums = [1, 2, 3, 4, 5];\nconst result = nums.filter((n) => n % 2 === 1).map((n) => n * n);\nconsole.log(JSON.stringify(result));\nconsole.log(nums.length);\nconst sliced = nums.slice(1, 3);\nconsole.log(JSON.stringify(sliced));\n"
+}

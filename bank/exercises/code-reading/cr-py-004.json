@@ -1,0 +1,11 @@
+{
+  "id": "cr-py-004",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "python",
+  "tier": 3,
+  "title": "Late binding bites",
+  "prompt": "Read the snippet. Predict its exact stdout. (Watch the lambdas — and remember\nwhat `or` / `and` actually return in Python.)",
+  "softTimeLimitSeconds": 240,
+  "snippet": "funcs = []\nfor i in range(3):\n    funcs.append(lambda: i * 10)\nprint([f() for f in funcs])\n\nx = 0\nprint(x or \"fallback\")\nprint(x and \"value\")\n"
+}

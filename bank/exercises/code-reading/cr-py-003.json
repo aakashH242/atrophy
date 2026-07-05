@@ -1,0 +1,11 @@
+{
+  "id": "cr-py-003",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "python",
+  "tier": 2,
+  "title": "Slice and dice",
+  "prompt": "Read the snippet. Predict its exact stdout (one print per line).",
+  "softTimeLimitSeconds": 180,
+  "snippet": "s = \"developer\"\nprint(s[2:5])\nprint(s[-3:])\nprint(s[::2])\nprint(s[1:100])\n"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "cr-js-001",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Coercion warm-up",
+  "prompt": "Read the snippet. Predict its exact stdout (each console.log prints one line).",
+  "softTimeLimitSeconds": 120,
+  "snippet": "console.log(1 + \"2\");\nconsole.log(\"3\" - 1);\nconsole.log(typeof null);\nconsole.log(Boolean(\"\"));\n"
+}

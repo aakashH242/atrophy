@@ -1,0 +1,11 @@
+{
+  "id": "cr-py-001",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "python",
+  "tier": 1,
+  "title": "Two names, one list",
+  "prompt": "Read the snippet. Predict its exact stdout — every line, exactly as Python prints it.",
+  "softTimeLimitSeconds": 120,
+  "snippet": "a = [1, 2]\nb = a\nb.append(3)\nprint(len(a))\nprint(a is b)\nc = a[:]\nc.append(4)\nprint(a)\n"
+}

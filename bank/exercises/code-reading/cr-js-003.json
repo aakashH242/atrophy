@@ -1,0 +1,11 @@
+{
+  "id": "cr-js-003",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "javascript",
+  "tier": 2,
+  "title": "Two counters walk into a closure",
+  "prompt": "Read the snippet. Predict its exact stdout.",
+  "softTimeLimitSeconds": 180,
+  "snippet": "function makeCounter() {\n  let count = 0;\n  return function () {\n    count += 1;\n    return count;\n  };\n}\nconst a = makeCounter();\nconst b = makeCounter();\nconsole.log(a());\nconsole.log(a());\nconsole.log(b());\nconsole.log(a() + b());\n"
+}

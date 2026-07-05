@@ -1,0 +1,11 @@
+{
+  "id": "cr-js-004",
+  "kind": "predict-output",
+  "axis": "code-reading",
+  "language": "javascript",
+  "tier": 3,
+  "title": "Hoisting and holes",
+  "prompt": "Read the snippet. Predict its exact stdout.\n(console.log with multiple arguments separates them with single spaces.)",
+  "softTimeLimitSeconds": 240,
+  "snippet": "console.log(typeof foo);\nvar foo = \"bar\";\nconst arr = [10, 20];\nconst [x, y = 99, z = 7] = [1, undefined];\nconsole.log(x, y, z);\nconsole.log(Math.max(...arr, 15));\n"
+}
