@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atrophy — decay dashboard</title>
+<style>
+  :root {
+    --page:       #f9f9f7;
+    --surface:    #fcfcfb;
+    --ink:        #0b0b0b;
+    --ink-2:      #52514e;
+    --muted:      #898781;
+    --grid:       #e1e0d9;
+    --axis:       #c3c2b7;
+    --border:     rgba(11,11,11,0.10);
+    --series-1:   #2a78d6;  /* unaided */
+    --series-2:   #1baf7a;  /* AI-assisted */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page:     #0d0d0d;
+      --surface:  #1a1a19;
+      --ink:      #ffffff;
+      --ink-2:    #c3c2b7;
+      --muted:    #898781;
+      --grid:     #2c2c2a;
+      --axis:     #383835;
+      --border:   rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #199e70;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 28px 20px 60px;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+  header h1 { font-size: 22px; font-weight: 650; letter-spacing: -0.01em; }
+  header p  { color: var(--ink-2); margin-top: 2px; }
+  header .stamp { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  section { margin-top: 32px; }
+  h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .sub { color: var(--ink-2); font-size: 13px; margin-bottom: 14px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .tile .label { color: var(--ink-2); font-size: 12.5px; }
+  .tile .value { font-size: 30px; font-weight: 600; margin-top: 2px; }
+  .tile .meta  { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .tile .meta .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: baseline; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px 8px;
+  }
+  .card h3 { font-size: 13px; font-weight: 600; }
+  .card .cardsub { color: var(--muted); font-size: 11.5px; margin-bottom: 6px; }
+  .card.wide { grid-column: 1 / -1; }
+  svg { display: block; }
+  svg:focus { outline: 1.5px solid var(--series-1); outline-offset: 2px; border-radius: 6px; }
+
+  .legend { display: flex; gap: 18px; margin: 2px 0 8px; font-size: 12.5px; color: var(--ink-2); }
+  .legend .key { display: inline-block; width: 14px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  .axis-text { font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .end-label { font-size: 11.5px; fill: var(--ink-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; color: var(--ink-2);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12); max-width: 260px;
+  }
+  #tooltip .tt-title { color: var(--ink); font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 12px; border-top: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  thead th { border-top: none; color: var(--ink-2); font-weight: 600; font-size: 12px; background: var(--surface); }
+  td.num, th.num { text-align: right; }
+  .mode-key { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+  .empty {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 40px 24px; text-align: center; color: var(--ink-2); margin-top: 24px;
+  }
+  .empty .big { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  code { background: var(--page); border: 1px solid var(--grid); border-radius: 4px; padding: 1px 6px; font-size: 12.5px; }
+  .note { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+  #fileFallback { display: none; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Atrophy</h1>
+    <p>Your unaided-skill baseline — the rating holds without evidence; the band is confidence decaying.</p>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div id="content"></div>
+
+  <div class="empty" id="loading">
+    <div class="big">Loading…</div>
+    <div id="fileFallback">
+      Couldn’t reach <code>/data.json</code>. Serve with <code>atrophy serve</code>,
+      or load an <code>atrophy export</code> file: <input type="file" id="filePick" accept=".json">
+    </div>
+  </div>
+</div>
+<div id="tooltip"></div>
+
+<script>
+"use strict";
+const AXES = ["syntax-recall", "debugging", "code-reading", "api-memory", "decomposition"];
+const NS = "http://www.w3.org/2000/svg";
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const $ = (sel) => document.querySelector(sel);
+const DAY = 86400000;
+
+function el(tag, attrs, parent) {
+  const node = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) node.setAttribute(k, v);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+function div(cls, html, parent) {
+  const node = document.createElement("div");
+  if (cls) node.className = cls;
+  if (html !== undefined) node.innerHTML = html;
+  if (parent) parent.appendChild(node);
+  return node;
+}
+const fmtDate = (t) => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+const fmtDateTime = (t) => new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function niceTicks(min, max, count) {
+  if (min === max) { min -= 1; max += 1; }
+  const span = max - min;
+  const step0 = span / Math.max(1, count);
+  const mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 5, 10].map((m) => m * mag).find((s) => span / s <= count) || 10 * mag;
+  const ticks = [];
+  for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) ticks.push(v);
+  return ticks;
+}
+
+function freshness(rd, reps) {
+  if (reps === 0) return "untested";
+  const f = rd < 120 ? "fresh" : rd < 200 ? "aging" : rd < 300 ? "cracking" : "stale";
+  return reps < 5 && f !== "fresh" ? "calibrating" : f;
+}
+
+// ---------- tooltip ----------
+const tt = $("#tooltip");
+function showTip(html, x, y) {
+  tt.innerHTML = html;
+  tt.style.display = "block";
+  const r = tt.getBoundingClientRect();
+  tt.style.left = Math.min(x + 14, window.innerWidth - r.width - 8) + "px";
+  tt.style.top = Math.max(8, y - r.height - 12) + "px";
+}
+function hideTip() { tt.style.display = "none"; }
+
+// ---------- decay chart (single series: rating line + RD band) ----------
+function decayChart(card, points, sessions) {
+  const W = card.clientWidth - 34, H = 190;
+  const M = { l: 46, r: 54, t: 14, b: 26 };
+  const svg = el("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, tabindex: 0, role: "img", "aria-label": "rating over time with confidence band" }, card);
+
+  const ts = points.map((p) => Date.parse(p.t));
+  const x0 = Math.min(...ts), x1 = Math.max(...ts);
+  const lo = Math.min(...points.map((p) => p.rating - p.rd));
+  const hi = Math.max(...points.map((p) => p.rating + p.rd));
+  const pad = (hi - lo) * 0.08 + 5;
+  const y0 = lo - pad, y1 = hi + pad;
+  const X = (t) => M.l + ((t - x0) / Math.max(1, x1 - x0)) * (W - M.l - M.r);
+  const Y = (v) => M.t + (1 - (v - y0) / (y1 - y0)) * (H - M.t - M.b);
+
+  for (const v of niceTicks(y0, y1, 3)) {
+    if (v < y0 || v > y1) continue;
+    el("line", { x1: M.l, x2: W - M.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    el("text", { x: M.l - 7, y: Y(v) + 3.5, "text-anchor": "end", class: "axis-text" }, svg).textContent = Math.round(v);
+  }
+  const nx = Math.max(2, Math.min(4, Math.round((x1 - x0) / (14 * DAY)) + 2));
+  for (let i = 0; i < nx; i++) {
+    const t = x0 + ((x1 - x0) * i) / (nx - 1);
+    el("text", { x: X(t), y: H - 8, "text-anchor": i === 0 ? "start" : i === nx - 1 ? "end" : "middle", class: "axis-text" }, svg).textContent = fmtDate(t);
+  }
+  el("line", { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, stroke: "var(--axis)", "stroke-width": 1 }, svg);
+
+  const bandTop = points.map((p, i) => `${i ? "L" : "M"}${X(ts[i])},${Y(p.rating + p.rd)}`).join("");
+  const bandBot = points.slice().reverse().map((p, j) => `L${X(ts[points.length - 1 - j])},${Y(p.rating - p.rd)}`).join("");
+  el("path", { d: bandTop + bandBot + "Z", fill: "var(--series-1)", "fill-opacity": 0.1 }, svg);
+
+  const line = points.map((p, i) => `${i ? "L" : "M"}${X(ts[i])},${Y(p.rating)}`).join("");
+  el("path", { d: line, fill: "none", stroke: "var(--series-1)", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round" }, svg);
+
+  const last = points[points.length - 1];
+  el("circle", { cx: X(ts[ts.length - 1]), cy: Y(last.rating), r: 4.5, fill: "var(--series-1)", stroke: "var(--surface)", "stroke-width": 2 }, svg);
+  el("text", { x: X(ts[ts.length - 1]) + 9, y: Y(last.rating) + 4, class: "end-label" }, svg).textContent = Math.round(last.rating);
+
+  // reps as small markers on the line
+  const repTs = sessions.map((s) => Date.parse(s.ts));
+  for (const s of sessions) {
+    el("circle", { cx: X(Date.parse(s.ts)), cy: Y(s.rating_after), r: 3, fill: "var(--series-1)", stroke: "var(--surface)", "stroke-width": 2 }, svg);
+  }
+
+  // hover crosshair + keyboard: arrow keys walk the reps
+  const hair = el("line", { y1: M.t, y2: H - M.b, stroke: "var(--axis)", "stroke-width": 1, visibility: "hidden" }, svg);
+  const tipAt = (p, cx, cy) => showTip(
+    `<div class="tt-title">${Math.round(p.rating)} <span style="font-weight:400">±${Math.round(p.rd)}</span></div>${fmtDate(Date.parse(p.t))} · ${freshness(p.rd, 99)}`,
+    cx, cy);
+  svg.addEventListener("mousemove", (e) => {
+    const rect = svg.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * W;
+    let best = 0, bd = Infinity;
+    ts.forEach((t, i) => { const d = Math.abs(X(t) - mx); if (d < bd) { bd = d; best = i; } });
+    hair.setAttribute("x1", X(ts[best])); hair.setAttribute("x2", X(ts[best]));
+    hair.setAttribute("visibility", "visible");
+    tipAt(points[best], e.clientX, e.clientY);
+  });
+  svg.addEventListener("mouseleave", () => { hair.setAttribute("visibility", "hidden"); hideTip(); });
+  let ki = sessions.length - 1;
+  svg.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    ki = Math.max(0, Math.min(sessions.length - 1, ki + (e.key === "ArrowRight" ? 1 : -1)));
+    const s = sessions[ki];
+    const idx = ts.indexOf(repTs[ki]);
+    const p = idx >= 0 ? points[idx] : { t: s.ts, rating: s.rating_after, rd: 0 };
+    const rect = svg.getBoundingClientRect();
+    tipAt(p, rect.left + (X(repTs[ki]) / W) * rect.width, rect.top + 40);
+  });
+  svg.addEventListener("blur", hideTip);
+}
+
+// ---------- divergence chart (two series: ai-off vs ai-on scores) ----------
+function divergenceChart(card, sessions) {
+  const W = card.clientWidth - 34, H = 240;
+  const M = { l: 40, r: 86, t: 14, b: 28 };
+  const svg = el("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "unaided versus AI-assisted drill scores over time" }, card);
+
+  const all = sessions.slice().sort((a, b) => Date.parse(a.ts) - Date.parse(b.ts));
+  const ts = all.map((s) => Date.parse(s.ts));
+  const x0 = Math.min(...ts), x1 = Math.max(...ts, x0 + DAY);
+  const X = (t) => M.l + ((t - x0) / Math.max(1, x1 - x0)) * (W - M.l - M.r);
+  const Y = (v) => M.t + (1 - v) * (H - M.t - M.b);
+
+  for (const v of [0, 0.25, 0.5, 0.75, 1]) {
+    el("line", { x1: M.l, x2: W - M.r, y1: Y(v), y2: Y(v), stroke: v === 0 ? "var(--axis)" : "var(--grid)", "stroke-width": 1 }, svg);
+    el("text", { x: M.l - 7, y: Y(v) + 3.5, "text-anchor": "end", class: "axis-text" }, svg).textContent = String(v);
+  }
+  const nx = Math.max(2, Math.min(5, Math.round((x1 - x0) / (10 * DAY)) + 2));
+  for (let i = 0; i < nx; i++) {
+    const t = x0 + ((x1 - x0) * i) / (nx - 1);
+    el("text", { x: X(t), y: H - 9, "text-anchor": i === 0 ? "start" : i === nx - 1 ? "end" : "middle", class: "axis-text" }, svg).textContent = fmtDate(t);
+  }
+
+  const modes = [
+    { mode: "ai-off", color: "var(--series-1)", label: "unaided" },
+    { mode: "ai-on", color: "var(--series-2)", label: "with AI" },
+  ];
+  for (const m of modes) {
+    const pts = all.filter((s) => s.mode === m.mode);
+    if (!pts.length) continue;
+    // rolling mean (window 5) as the trend line
+    if (pts.length >= 2) {
+      const trend = pts.map((s, i) => {
+        const win = pts.slice(Math.max(0, i - 4), i + 1);
+        return { t: Date.parse(s.ts), v: win.reduce((a, w) => a + w.score, 0) / win.length };
+      });
+      el("path", {
+        d: trend.map((p, i) => `${i ? "L" : "M"}${X(p.t)},${Y(p.v)}`).join(""),
+        fill: "none", stroke: m.color, "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round",
+      }, svg);
+      const end = trend[trend.length - 1];
+      el("text", { x: X(end.t) + 12, y: Y(end.v) + 4, class: "end-label" }, svg).textContent = m.label;
+    }
+    for (const s of pts) {
+      const cx = X(Date.parse(s.ts)), cy = Y(s.score);
+      el("circle", { cx, cy, r: 4.5, fill: m.color, stroke: "var(--surface)", "stroke-width": 2 }, svg);
+      const hit = el("circle", { cx, cy, r: 13, fill: "transparent", tabindex: 0, role: "img",
+        "aria-label": `${m.label} ${s.score.toFixed(2)} on ${fmtDate(Date.parse(s.ts))}` }, svg);
+      hit.style.cursor = "pointer";
+      const html = `<div class="tt-title">score ${s.score.toFixed(2)} · ${m.label}</div>` +
+        `${esc(s.exercise_id)} (${esc(s.axis)})<br>${s.passed}/${s.total} · ${Math.round(s.elapsed_seconds)}s · ${fmtDateTime(Date.parse(s.ts))}`;
+      hit.addEventListener("mouseenter", (e) => showTip(html, e.clientX, e.clientY));
+      hit.addEventListener("mouseleave", hideTip);
+      hit.addEventListener("focus", () => {
+        const r = hit.getBoundingClientRect();
+        showTip(html, r.left + r.width / 2, r.top);
+      });
+      hit.addEventListener("blur", hideTip);
+    }
+  }
+}
+
+// ---------- render ----------
+function render(data) {
+  $("#loading").style.display = "none";
+  const content = $("#content");
+  content.innerHTML = "";
+  $("#stamp").textContent = "data as of " + fmtDateTime(Date.parse(data.exportedAt));
+
+  const ratingByAxis = Object.fromEntries((data.ratings || []).map((r) => [r.axis, r]));
+  const sessions = data.sessions || [];
+  const offSessions = sessions.filter((s) => s.mode === "ai-off");
+
+  if (!sessions.length) {
+    div("empty", `<div class="big">No reps yet.</div>Run <code>atrophy baseline</code> to set your unaided baseline, then come back.`, content);
+    return;
+  }
+
+  // KPI tiles
+  const tiles = div("tiles", "", content);
+  for (const axis of AXES) {
+    const r = ratingByAxis[axis];
+    const tl = (data.timelines || {})[axis] || [];
+    const rdNow = tl.length ? tl[tl.length - 1].rd : r ? r.rd : 350;
+    const state = freshness(rdNow, r ? r.reps : 0);
+    const lastOff = offSessions.filter((s) => s.axis === axis).map((s) => Date.parse(s.ts)).sort((a, b) => b - a)[0];
+    const ago = lastOff ? Math.floor((Date.now() - lastOff) / DAY) : null;
+    const agoText = ago === null ? "never drilled" : ago === 0 ? "today" : ago === 1 ? "yesterday" : ago + "d ago";
+    div("tile",
+      `<div class="label">${axis}</div>` +
+      `<div class="value">${r ? Math.round(r.rating) : "—"}</div>` +
+      `<div class="meta"><span class="dot" style="background:${r ? "var(--series-1)" : "var(--grid)"}"></span>${state} · ${r ? r.reps : 0} reps · ${agoText}</div>`,
+      tiles);
+  }
+
+  // Charts are drawn AFTER the whole page is in the DOM: card widths are only
+  // stable once the scrollbar/grid layout has settled.
+  const chartJobs = [];
+
+  // Decay curves
+  const s1 = document.createElement("section");
+  content.appendChild(s1);
+  s1.innerHTML = `<h2>Decay curves</h2><div class="sub">Rating (line) with the confidence band (±RD). The band widening is inactivity — the visible crack.</div>`;
+  const grid = div("cards", "", s1);
+  let any = false;
+  for (const axis of AXES) {
+    const pts = (data.timelines || {})[axis] || [];
+    if (pts.length < 2) continue;
+    any = true;
+    const card = div("card", `<h3>${axis}</h3><div class="cardsub">${offSessions.filter((s) => s.axis === axis).length} unaided reps</div>`, grid);
+    const reps = offSessions.filter((s) => s.axis === axis).sort((a, b) => Date.parse(a.ts) - Date.parse(b.ts));
+    chartJobs.push(() => decayChart(card, pts, reps));
+  }
+  if (!any) div("note", "Curves appear after your first rep on an axis.", s1);
+
+  // Divergence
+  const s2 = document.createElement("section");
+  content.appendChild(s2);
+  s2.innerHTML = `<h2>Unaided vs AI-assisted</h2><div class="sub">Per-drill scores. If these lines drift apart, that gap is what the tool exists to show you.</div>`;
+  const card2 = div("card wide", "", s2);
+  card2.innerHTML = `<div class="legend">
+      <span><span class="key" style="background:var(--series-1)"></span>unaided</span>
+      <span><span class="key" style="background:var(--series-2)"></span>with AI</span>
+    </div>`;
+  chartJobs.push(() => divergenceChart(card2, sessions));
+  if (!sessions.some((s) => s.mode === "ai-on")) {
+    div("note", "No AI-assisted reps yet — run <code>atrophy drill --ai-on</code> monthly to plot the gap.", s2);
+  }
+
+  // Sessions table (the WCAG-clean twin of everything above)
+  const s3 = document.createElement("section");
+  content.appendChild(s3);
+  const recent = sessions.slice().sort((a, b) => Date.parse(b.ts) - Date.parse(a.ts)).slice(0, 20);
+  s3.innerHTML = `<h2>Recent sessions</h2><div class="sub">Last ${recent.length} of ${sessions.length}.</div>`;
+  const rows = recent.map((s) => `<tr>
+      <td>${fmtDateTime(Date.parse(s.ts))}</td>
+      <td>${esc(s.axis)}</td>
+      <td>${esc(s.exercise_id)}</td>
+      <td><span class="mode-key" style="background:${s.mode === "ai-off" ? "var(--series-1)" : "var(--series-2)"}"></span>${s.mode === "ai-off" ? "unaided" : "with AI"}</td>
+      <td class="num">${s.passed}/${s.total}</td>
+      <td class="num">${Math.round(s.elapsed_seconds)}s</td>
+      <td class="num">${s.score.toFixed(2)}</td>
+      <td class="num">${s.mode === "ai-off" ? Math.round(s.rating_after) : "—"}</td>
+    </tr>`).join("");
+  s3.innerHTML += `<table>
+    <thead><tr><th>when</th><th>axis</th><th>exercise</th><th>mode</th>
+    <th class="num">tests</th><th class="num">time</th><th class="num">score</th><th class="num">rating →</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="note">Local-first: this reads your own SQLite file. Nothing leaves your machine.</div>`;
+
+  requestAnimationFrame(() => chartJobs.forEach((draw) => draw()));
+}
+
+// ---------- load ----------
+let lastData = null;
+async function init() {
+  try {
+    const res = await fetch("/data.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(res.statusText);
+    lastData = await res.json();
+    render(lastData);
+  } catch {
+    $("#fileFallback").style.display = "block";
+    $("#loading .big").textContent = "No live data.";
+    $("#filePick").addEventListener("change", (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      f.text().then((txt) => { lastData = JSON.parse(txt); render(lastData); });
+    });
+  }
+}
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { if (lastData) render(lastData); }, 150);
+});
+init();
+</script>
+</body>
+</html>
