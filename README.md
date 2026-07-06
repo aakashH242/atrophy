@@ -15,6 +15,8 @@ it has drifted from your AI-assisted performance.
 
 ![Atrophy decay dashboard — per-axis rating curves with confidence bands, and the unaided vs AI-assisted divergence chart](docs/assets/atrophy-dashboard.gif)
 
+**[Live demo →](https://ashutosh-rath02.github.io/atrophy/)** (synthetic data; your own dashboard runs locally via `atrophy serve`)
+
 ## Why
 
 Skill loss under AI assistance is measurable, fast, and invisible from the
