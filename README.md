@@ -130,6 +130,7 @@ atrophy baseline
 | `atrophy drill --axis debugging` | Drill a specific skill (`syntax-recall`, `debugging`, `code-reading`, `api-memory`, `decomposition`) |
 | `atrophy drill --lang python` | Only Python (or `javascript`) exercises |
 | `atrophy drill --ai-on` | Monthly comparison rep with AI allowed |
+| `atrophy publish --handle you` | Opt in to the [public leaderboard](https://ashutosh-rath02.github.io/atrophy/leaderboard.html); afterwards every drill syncs automatically (`--stop` opts out) |
 | `atrophy stats` | Ratings table in the terminal |
 | `atrophy serve` | Dashboard at `127.0.0.1:4646` |
 | `atrophy export -o out.json` | Dump all your data as JSON |

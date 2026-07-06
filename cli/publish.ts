@@ -9,8 +9,8 @@ import type { Store } from "../store/db.js";
 /** Patched to the deployed Worker URL; override with ATROPHY_LEADERBOARD_URL. */
 export const DEFAULT_LEADERBOARD_URL = "https://atrophy-leaderboard.ashutosh123rath.workers.dev";
 
-/** Publishing unlocks after a full baseline — keeps drive-by junk off the board. */
-export const MIN_REPS_TO_PUBLISH = 5;
+/** One real rep is enough — zero reps would be an all-default 1200 row (noise). */
+export const MIN_REPS_TO_PUBLISH = 1;
 
 export interface Snapshot {
   overall: number;
