@@ -6,14 +6,30 @@
   "bin": {
     "atrophy": "./dist/cli/index.js"
   },
+  "files": [
+    "dist",
+    "bank/exercises",
+    "dashboard/index.html",
+    "docs/research.md"
+  ],
   "engines": {
     "node": ">=20"
+  },
+  "author": "Ashutosh Rath <ashutosh123rath@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashutosh-rath02/atrophy.git"
+  },
+  "homepage": "https://github.com/ashutosh-rath02/atrophy#readme",
+  "bugs": {
+    "url": "https://github.com/ashutosh-rath02/atrophy/issues"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx cli/index.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "keywords": [
     "skill-decay",
