@@ -65,8 +65,12 @@ Not every skill is "write code against tests" — see the table below.
 | **API memory** | Fill in the blanked-out stdlib call | Answer match |
 | **Decomposition** | Outline a design (rate limiter, folder sync…) in bullets | You score yourself against a revealed rubric |
 
-Exercises come in Python and JavaScript across three difficulty tiers, and
-difficulty adapts: two strong passes promote you a tier, two fails demote.
+Exercises come in Python and JavaScript across three difficulty tiers — a
+hand-written static bank plus **generator families that render endless fresh
+variants** (randomized data, names, and twists; same seed always reproduces
+the same exercise). Difficulty targets *you*: each drill picks the tier where
+your predicted success is closest to ~65%, the point where a rep carries the
+most information. Comfortable wins teach the rating nothing.
 
 ## The dashboard
 
