@@ -5,4 +5,4 @@ compatibility_date = "2026-07-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "atrophy-leaderboard"
-database_id = "PLACEHOLDER_SET_AFTER_D1_CREATE"
+database_id = "067e038f-097b-4db3-9dba-41c47b052e31"

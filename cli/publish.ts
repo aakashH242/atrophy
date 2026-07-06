@@ -7,7 +7,7 @@ import { INITIAL_RATING } from "../engine/scoring.js";
 import type { Store } from "../store/db.js";
 
 /** Patched to the deployed Worker URL; override with ATROPHY_LEADERBOARD_URL. */
-export const DEFAULT_LEADERBOARD_URL = "https://atrophy-leaderboard.PLACEHOLDER.workers.dev";
+export const DEFAULT_LEADERBOARD_URL = "https://atrophy-leaderboard.ashutosh123rath.workers.dev";
 
 /** Publishing unlocks after a full baseline — keeps drive-by junk off the board. */
 export const MIN_REPS_TO_PUBLISH = 5;
