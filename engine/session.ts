@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { copyFileSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -89,9 +89,23 @@ function printTimer(ex: Exercise): void {
   );
 }
 
+/** VS Code is the most common case — use it when no editor is configured. */
+function detectVsCode(): string | null {
+  const finder = process.platform === "win32" ? "where" : "which";
+  try {
+    const r = spawnSync(finder, ["code"], { stdio: "ignore", shell: true });
+    return r.status === 0 ? "code" : null;
+  } catch {
+    return null;
+  }
+}
+
 function openEditor(file: string): boolean {
   const editor =
-    process.env.ATROPHY_EDITOR || process.env.VISUAL || process.env.EDITOR;
+    process.env.ATROPHY_EDITOR ||
+    process.env.VISUAL ||
+    process.env.EDITOR ||
+    detectVsCode();
   if (!editor) return false;
   // Fire and forget: the drill timer runs while the user edits.
   const child = spawn(editor, [file], {
@@ -102,6 +116,16 @@ function openEditor(file: string): boolean {
   child.on("error", () => {});
   child.unref();
   return true;
+}
+
+/** The three-step contract shown before every editor-based drill. */
+function printEditorInstructions(file: string, opened: boolean, what: string): void {
+  console.log(`\n  1. ${opened ? "Your editor just opened" : "Open"} ${pc.cyan(file)}`);
+  console.log(`  2. Write ${what} there and ${pc.bold("save the file")}`);
+  console.log(`  3. Come back here and press ${pc.bold("Enter")} — don't type code into this terminal`);
+  if (!opened) {
+    console.log(pc.dim("     (set $ATROPHY_EDITOR to auto-open next time, e.g. setx ATROPHY_EDITOR code)"));
+  }
 }
 
 function withScratchDir<T>(fn: (dir: string) => Promise<T>): Promise<T> {
@@ -192,18 +216,39 @@ async function codeDrill(ex: CodeExercise, solutionOverride?: string): Promise<D
     }
 
     printHeader(ex);
-    console.log(`Edit: ${pc.cyan(file)}`);
-    if (!openEditor(file)) {
-      console.log(pc.dim("(set $EDITOR / $ATROPHY_EDITOR to auto-open next time)"));
-    }
+    const opened = openEditor(file);
+    printEditorInstructions(file, opened, ex.kind === "fix" ? "the fix" : "your solution");
     printTimer(ex);
 
+    const initialContent = buildSolutionFile(ex);
     return withReadline(async (rl) => {
+      let canStop = false; // "s" only makes sense after a graded attempt
+      let lastPassed = 0;
+      let warnedUnchanged = false;
       for (;;) {
-        const answer = (
-          await rl.question(pc.bold("\n[Enter] submit · [q] abandon > "))
-        ).trim().toLowerCase();
+        const label = canStop
+          ? "\n[Enter] fix & resubmit · [s] stop here · [q] abandon > "
+          : "\n[Enter] submit · [q] abandon > ";
+        const answer = (await rl.question(pc.bold(label))).trim().toLowerCase();
         if (answer === "q") return makeOutcome(ex, 0, elapsed(), true);
+        if (answer === "s" && canStop) return makeOutcome(ex, lastPassed, elapsed());
+        if (answer !== "") {
+          console.log(
+            pc.yellow("\nCode goes in the solution file, not this terminal:") +
+              `\n  ${pc.cyan(file)}\n` +
+              pc.dim("Write it there, save, then press Enter here."),
+          );
+          continue;
+        }
+        if (!warnedUnchanged && readFileSync(file, "utf8") === initialContent) {
+          warnedUnchanged = true;
+          console.log(
+            pc.yellow("\nThe solution file hasn't changed — did you save it?") +
+              `\n  ${pc.cyan(file)}\n` +
+              pc.dim("Save your edits, then press Enter. (Enter again grades it as-is.)"),
+          );
+          continue;
+        }
 
         const result = await grade(ex, dir);
         const passed = result.harnessError ? 0 : result.passed;
@@ -213,11 +258,8 @@ async function codeDrill(ex: CodeExercise, solutionOverride?: string): Promise<D
         }
         console.log(pc.red(`\n${passed}/${result.total} tests passed.`));
         printFailures(result);
-        const again = (
-          await rl.question(pc.bold("\n[Enter] fix & resubmit · [s] stop here · [q] abandon > "))
-        ).trim().toLowerCase();
-        if (again === "q") return makeOutcome(ex, 0, elapsed(), true);
-        if (again === "s") return makeOutcome(ex, passed, elapsed());
+        canStop = true;
+        lastPassed = passed;
       }
     });
   });
@@ -320,16 +362,23 @@ async function outlineDrill(ex: OutlineExercise, solutionOverride?: string): Pro
     const elapsed = () => (Date.now() - started) / 1000;
 
     printHeader(ex);
-    console.log(`Edit: ${pc.cyan(file)}`);
-    if (!openEditor(file)) {
-      console.log(pc.dim("(set $EDITOR / $ATROPHY_EDITOR to auto-open next time)"));
-    }
+    const opened = openEditor(file);
+    printEditorInstructions(file, opened, "your outline");
     printTimer(ex);
 
     return withReadline(async (rl) => {
-      const answer = (
-        await rl.question(pc.bold("\n[Enter] submit outline · [q] abandon > "))
-      ).trim().toLowerCase();
+      let answer: string;
+      for (;;) {
+        answer = (
+          await rl.question(pc.bold("\n[Enter] submit outline · [q] abandon > "))
+        ).trim().toLowerCase();
+        if (answer === "" || answer === "q") break;
+        console.log(
+          pc.yellow("\nWrite the outline in the file, not this terminal:") +
+            `\n  ${pc.cyan(file)}\n` +
+            pc.dim("Save it, then press Enter here."),
+        );
+      }
       if (answer === "q") return makeOutcome(ex, 0, elapsed(), true);
 
       console.log(pc.bold("\nRubric — score yourself honestly:"));
