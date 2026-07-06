@@ -1,0 +1,8 @@
+name = "atrophy-leaderboard"
+main = "worker.js"
+compatibility_date = "2026-07-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "atrophy-leaderboard"
+database_id = "PLACEHOLDER_SET_AFTER_D1_CREATE"
