@@ -4,6 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pc from "picocolors";
+import { allGenerators } from "../bank/generators/index.js";
 import { AXES, loadBank, type Axis, type Exercise, type Language } from "../bank/schema.js";
 import { buildPayload, startServer } from "./serve.js";
 import { selectExercise } from "../engine/select.js";
@@ -68,8 +69,15 @@ async function drillOnce(store: Store, flags: DrillFlags): Promise<boolean> {
   const mode = flags.aiOn ? "ai-on" : "ai-off";
 
   const current = store.getRating(axis);
-  const recent = store.recentSessions(axis, 3).map((s) => s.exercise_id);
-  const ex = selectExercise(bank, axis, current.tier, recent, language);
+  const recent = store.recentSessions(axis, 6).map((s) => s.exercise_id);
+  const ex = selectExercise({
+    statics: bank,
+    generators: allGenerators,
+    axis,
+    rating: current.rating,
+    recentIds: recent,
+    language,
+  });
   if (!ex) {
     console.error(pc.red(`no exercises in the bank for axis "${axis}"${flags.lang ? ` (${flags.lang})` : ""} yet`));
     return false;
