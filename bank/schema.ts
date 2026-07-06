@@ -20,7 +20,8 @@ export const testCaseSchema = z.object({
 });
 
 const baseFields = {
-  id: z.string().regex(/^[a-z]+-[a-z]+-\d{3}$/, "id must look like sr-py-001"),
+  // static: sr-py-001 · generated: sr-py-cond-1a2b3c (family + hex seed)
+  id: z.string().regex(/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/, "id must look like sr-py-001 or family-abc123"),
   axis: z.enum(AXES),
   /** Difficulty tier: 1 (easy) to 3 (hard). */
   tier: z.number().int().min(1).max(3),
