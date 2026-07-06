@@ -181,7 +181,7 @@ export interface PredictionResult {
   correct: boolean;
   /** The snippet's real stdout (ground truth), when it ran cleanly. */
   actual?: string;
-  /** The snippet itself failed to run — a bank bug, not a user mistake. */
+  /** The snippet itself failed to run - a bank bug, not a user mistake. */
   error?: string;
 }
 
@@ -206,7 +206,7 @@ export async function gradePrediction(
   }
   if (result.timedOut || result.exitCode !== 0) {
     const detail = result.timedOut ? "timed out" : result.stderr.trim().slice(0, 500);
-    return { correct: false, error: `snippet failed to run (${detail}) — please report this exercise` };
+    return { correct: false, error: `snippet failed to run (${detail}) - please report this exercise` };
   }
   const actual = normalizeOutput(result.stdout);
   return { correct: actual === normalizeOutput(prediction), actual };

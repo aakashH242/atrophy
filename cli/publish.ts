@@ -9,7 +9,7 @@ import type { Store } from "../store/db.js";
 /** Patched to the deployed Worker URL; override with ATROPHY_LEADERBOARD_URL. */
 export const DEFAULT_LEADERBOARD_URL = "https://atrophy-leaderboard.ashutosh123rath.workers.dev";
 
-/** One real rep is enough — zero reps would be an all-default 1200 row (noise). */
+/** One real rep is enough - zero reps would be an all-default 1200 row (noise). */
 export const MIN_REPS_TO_PUBLISH = 1;
 
 export interface Snapshot {
@@ -20,7 +20,7 @@ export interface Snapshot {
 
 /**
  * Overall = mean rating across ALL five axes, with untested axes counted at
- * the 1200 starting rating — so you can't inflate the number by publishing
+ * the 1200 starting rating - so you can't inflate the number by publishing
  * only your best axis.
  */
 export function buildSnapshot(store: Store): Snapshot {
@@ -70,7 +70,7 @@ export function isRegistered(): boolean {
 
 /**
  * Fire-and-mostly-forget sync after a drill: quiet on success, quieter on
- * failure — a dead network must never get between the user and their rep.
+ * failure - a dead network must never get between the user and their rep.
  */
 export async function autoSync(store: Store): Promise<void> {
   const lb = readConfig().leaderboard;
@@ -119,7 +119,7 @@ export async function publishCommand(
           pc.dim("(open an issue on the repo to have it deleted)"),
       );
     } else {
-      console.log(pc.dim("you weren't registered — nothing to stop"));
+      console.log(pc.dim("you weren't registered - nothing to stop"));
     }
     return;
   }
@@ -127,7 +127,7 @@ export async function publishCommand(
   if (snap.reps < MIN_REPS_TO_PUBLISH) {
     console.error(
       pc.red(`publishing unlocks after ${MIN_REPS_TO_PUBLISH} unaided reps`) +
-        pc.dim(` (you have ${snap.reps} — run atrophy drill)`),
+        pc.dim(` (you have ${snap.reps} - run atrophy drill)`),
     );
     process.exitCode = 1;
     return;
@@ -149,8 +149,8 @@ export async function publishCommand(
 
   if (!saved.token) {
     console.log(
-      pc.dim("Opt-in: this sends your handle, per-axis ratings, and rep counts —") +
-        pc.dim(" nothing else — to the public leaderboard. Delete anytime by asking in the repo."),
+      pc.dim("Opt-in: this sends your handle, per-axis ratings, and rep counts  - ") +
+        pc.dim(" nothing else - to the public leaderboard. Delete anytime by asking in the repo."),
     );
   }
 

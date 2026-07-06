@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Atrophy — leaderboard</title>
+<title>Atrophy - leaderboard</title>
 <style>
   :root {
     --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
@@ -37,8 +37,8 @@
   <div class="sub">Unaided-skill ratings, self-reported and opt-in. Overall = mean across all five axes (untested axes count as the 1200 start).</div>
   <div id="content"><div class="state">Loading…</div></div>
   <div class="note">
-    Join it: <code>npm i -g atrophy</code>, do one unaided drill, then <code>atrophy publish --handle you</code> — every drill after that syncs automatically.
-    Honor system by design — the only person you can cheat is yourself.
+    Join it: <code>npm i -g atrophy</code>, do one unaided drill, then <code>atrophy publish --handle you</code> - every drill after that syncs automatically.
+    Honor system by design - the only person you can cheat is yourself.
     <a href="https://github.com/ashutosh-rath02/atrophy">Source</a> · <a href="./">demo dashboard</a>
   </div>
 </div>
@@ -55,7 +55,7 @@ fetch(API + "/v1/leaderboard")
   .then(({ count, entries }) => {
     const el = document.getElementById("content");
     if (!entries || entries.length === 0) {
-      el.innerHTML = '<div class="state">Nobody here yet. Be the first — see below.</div>';
+      el.innerHTML = '<div class="state">Nobody here yet. Be the first - see below.</div>';
       return;
     }
     el.innerHTML = `<table><thead><tr><th></th><th>handle</th><th class="num">overall</th><th class="num">unaided reps</th><th class="num">last update</th></tr></thead><tbody>` +
@@ -65,7 +65,7 @@ fetch(API + "/v1/leaderboard")
       `</tbody></table><div class="note">${count} ${count === 1 ? "entry" : "entries"} total.</div>`;
   })
   .catch(() => {
-    document.getElementById("content").innerHTML = '<div class="state">Leaderboard unreachable — try again in a minute.</div>';
+    document.getElementById("content").innerHTML = '<div class="state">Leaderboard unreachable - try again in a minute.</div>';
   });
 </script>
 </body>

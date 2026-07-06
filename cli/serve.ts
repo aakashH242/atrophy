@@ -3,7 +3,7 @@ import { createServer, type Server } from "node:http";
 import { buildTimelines } from "../engine/timeline.js";
 import type { Store } from "../store/db.js";
 
-/** The dashboard's entire data contract — also what `atrophy export` writes. */
+/** The dashboard's entire data contract - also what `atrophy export` writes. */
 export function buildPayload(store: Store): object {
   const sessions = store.allSessions();
   return {

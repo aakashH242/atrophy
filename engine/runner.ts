@@ -20,7 +20,7 @@ const MAX_OUTPUT_BYTES = 256 * 1024;
 /**
  * Run a command in a subprocess with a hard timeout and capped output.
  * Grading runs untrusted-ish user code, so: no shell, no stdin, minimal env.
- * (Network isolation is not enforced in v1 — documented limitation.)
+ * (Network isolation is not enforced in v1 - documented limitation.)
  */
 export function run(
   cmd: string,

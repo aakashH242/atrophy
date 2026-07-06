@@ -23,7 +23,7 @@ function predictExercise(
     language,
     tier,
     title,
-    prompt: "Read the snippet. Predict its exact stdout — every line, exactly as it prints.",
+    prompt: "Read the snippet. Predict its exact stdout - every line, exactly as it prints.",
     softTimeLimitSeconds: PREDICT_LIMIT_BY_TIER[tier] ?? 180,
     snippet,
   };

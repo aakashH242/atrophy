@@ -5,7 +5,7 @@
   "language": "javascript",
   "tier": 1,
   "title": "Count vowels",
-  "prompt": "Write countVowels(s) that returns how many vowels (a, e, i, o, u — case-insensitive)\nappear in the string s.\n\nExamples:\n  countVowels(\"hello\") -> 2\n  countVowels(\"XYZ\") -> 0",
+  "prompt": "Write countVowels(s) that returns how many vowels (a, e, i, o, u - case-insensitive)\nappear in the string s.\n\nExamples:\n  countVowels(\"hello\") -> 2\n  countVowels(\"XYZ\") -> 0",
   "functionName": "countVowels",
   "starterCode": "function countVowels(s) {\n  // your code\n}\n\nmodule.exports = { countVowels };\n",
   "softTimeLimitSeconds": 180,

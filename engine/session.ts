@@ -85,11 +85,11 @@ function printHeader(ex: Exercise): void {
 function printTimer(ex: Exercise): void {
   console.log(
     pc.yellow("AI off. ") +
-      `Soft limit ${Math.round(ex.softTimeLimitSeconds / 60)} min — timer started.`,
+      `Soft limit ${Math.round(ex.softTimeLimitSeconds / 60)} min - timer started.`,
   );
 }
 
-/** VS Code is the most common case — use it when no editor is configured. */
+/** VS Code is the most common case - use it when no editor is configured. */
 function detectVsCode(): string | null {
   const finder = process.platform === "win32" ? "where" : "which";
   try {
@@ -122,7 +122,7 @@ function openEditor(file: string): boolean {
 function printEditorInstructions(file: string, opened: boolean, what: string): void {
   console.log(`\n  1. ${opened ? "Your editor just opened" : "Open"} ${pc.cyan(file)}`);
   console.log(`  2. Write ${what} there and ${pc.bold("save the file")}`);
-  console.log(`  3. Come back here and press ${pc.bold("Enter")} — don't type code into this terminal`);
+  console.log(`  3. Come back here and press ${pc.bold("Enter")} - don't type code into this terminal`);
   if (!opened) {
     console.log(pc.dim("     (set $ATROPHY_EDITOR to auto-open next time, e.g. setx ATROPHY_EDITOR code)"));
   }
@@ -243,7 +243,7 @@ async function codeDrill(ex: CodeExercise, solutionOverride?: string): Promise<D
         if (!warnedUnchanged && readFileSync(file, "utf8") === initialContent) {
           warnedUnchanged = true;
           console.log(
-            pc.yellow("\nThe solution file hasn't changed — did you save it?") +
+            pc.yellow("\nThe solution file hasn't changed - did you save it?") +
               `\n  ${pc.cyan(file)}\n` +
               pc.dim("Save your edits, then press Enter. (Enter again grades it as-is.)"),
           );
@@ -293,7 +293,7 @@ async function predictDrill(ex: PredictExercise, solutionOverride?: string): Pro
       const r = await gradePrediction(ex, dir, prediction);
       if (r.error) {
         console.log(pc.red(`\n${r.error}`));
-        return makeOutcome(ex, 0, elapsed(), true); // bank bug — don't punish the user
+        return makeOutcome(ex, 0, elapsed(), true); // bank bug - don't punish the user
       }
       if (r.correct) {
         console.log(pc.green("\n✓ exact match") + pc.dim(` in ${Math.round(elapsed())}s`));
@@ -342,7 +342,7 @@ function buildOutlineFile(ex: OutlineExercise): string {
 
 ${ex.prompt.trim()}
 
-AI OFF. Write your outline below the line — pseudocode or bullets, 5–10 points.
+AI OFF. Write your outline below the line - pseudocode or bullets, 5-10 points.
 
 ---
 
@@ -381,7 +381,7 @@ async function outlineDrill(ex: OutlineExercise, solutionOverride?: string): Pro
       }
       if (answer === "q") return makeOutcome(ex, 0, elapsed(), true);
 
-      console.log(pc.bold("\nRubric — score yourself honestly:"));
+      console.log(pc.bold("\nRubric - score yourself honestly:"));
       ex.rubric.forEach((point, i) => console.log(`  ${i + 1}. ${point}`));
       const n = ex.rubric.length;
       for (;;) {

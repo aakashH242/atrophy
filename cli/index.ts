@@ -28,7 +28,7 @@ function bankDir(): string {
     join(__dirname, "..", "..", "bank", "exercises"), // built: dist/cli/../../bank
   ];
   const found = candidates.find((c) => existsSync(c));
-  if (!found) throw new Error("exercise bank not found — set ATROPHY_BANK");
+  if (!found) throw new Error("exercise bank not found - set ATROPHY_BANK");
   return found;
 }
 
@@ -41,7 +41,7 @@ interface DrillFlags {
 
 function parseAxis(value: string): Axis {
   if (!(AXES as readonly string[]).includes(value)) {
-    console.error(pc.red(`unknown axis "${value}" — one of: ${AXES.join(", ")}`));
+    console.error(pc.red(`unknown axis "${value}" - one of: ${AXES.join(", ")}`));
     process.exit(1);
   }
   return value as Axis;
@@ -86,12 +86,12 @@ async function drillOnce(store: Store, flags: DrillFlags): Promise<boolean> {
 
   const outcome = await runDrill(ex, flags.solution);
   if (outcome.abandoned) {
-    console.log(pc.dim("\nAbandoned — nothing recorded. The rep only counts if you take it."));
+    console.log(pc.dim("\nAbandoned - nothing recorded. The rep only counts if you take it."));
     return true;
   }
 
   // AI-on sessions are recorded for the divergence chart but never touch the
-  // unaided rating (PLAN §3.1 — the killer chart is the gap).
+  // unaided rating (PLAN §3.1 - the killer chart is the gap).
   let after: RatingState = current;
   if (mode === "ai-off") {
     after = updateRating(current, ex.tier, outcome.score);
@@ -151,7 +151,7 @@ function daysAgo(iso: string | null): string {
 function stats(store: Store): void {
   const rows = AXES.map((axis) => ({ axis, ...store.getRating(axis) }));
   const anyReps = rows.some((r) => r.reps > 0);
-  console.log(pc.bold("\n  Atrophy — unaided skill baseline\n"));
+  console.log(pc.bold("\n  Atrophy - unaided skill baseline\n"));
   const header = ["axis".padEnd(16), "rating".padStart(7), "±RD".padStart(5), "reps".padStart(5), "tier".padStart(5), "last rep".padStart(10), "  state"];
   console.log(pc.dim("  " + header.join("  ")));
   for (const r of rows) {
@@ -164,8 +164,8 @@ function stats(store: Store): void {
         : FRESHNESS_BADGE[freshness(r.rd)];
     const line = [
       r.axis.padEnd(16),
-      (untested ? "—" : r.rating.toFixed(0)).padStart(7),
-      (untested ? "—" : r.rd.toFixed(0)).padStart(5),
+      (untested ? "-" : r.rating.toFixed(0)).padStart(7),
+      (untested ? "-" : r.rd.toFixed(0)).padStart(5),
       String(r.reps).padStart(5),
       String(r.tier).padStart(5),
       daysAgo(r.updatedAt).padStart(10),
@@ -176,13 +176,13 @@ function stats(store: Store): void {
   if (!anyReps) {
     console.log(pc.dim("\n  No reps yet. Run ") + pc.cyan("atrophy baseline") + pc.dim(" to set your unaided baseline."));
   } else {
-    console.log(pc.dim("\n  RD widens while you coast — that's confidence decaying, not the score."));
+    console.log(pc.dim("\n  RD widens while you coast - that's confidence decaying, not the score."));
     const last = store.lastDrillTs();
     const idleDays = last ? (Date.now() - Date.parse(last)) / 86_400_000 : Infinity;
     if (idleDays > 3) {
       console.log(
         pc.yellow(`  ⚠ ${Math.floor(idleDays)} days since your last unaided rep.`) +
-          pc.dim(" 2–3x/week keeps the baseline honest — run ") + pc.cyan("atrophy drill") + pc.dim("."),
+          pc.dim(" 2-3x/week keeps the baseline honest - run ") + pc.cyan("atrophy drill") + pc.dim("."),
       );
     }
   }
@@ -214,7 +214,7 @@ async function baseline(store: Store, flags: DrillFlags): Promise<void> {
   const axesWithExercises = AXES.filter((a) => bank.some((ex) => ex.axis === a));
   console.log(
     pc.bold("Baseline session") +
-      ` — one unaided drill per axis (${axesWithExercises.length} available today).`,
+      ` - one unaided drill per axis (${axesWithExercises.length} available today).`,
   );
   for (const axis of axesWithExercises) {
     const ok = await drillOnce(store, { ...flags, axis });
@@ -244,7 +244,7 @@ program
 
 program
   .command("drill")
-  .description("run one unaided micro-drill (5–10 min)")
+  .description("run one unaided micro-drill (5-10 min)")
   .option("-a, --axis <axis>", `skill axis: ${AXES.join(", ")}`)
   .option("-l, --lang <language>", "python or javascript")
   .option("--ai-on", "monthly comparison rep WITH your AI tools (plots the gap, never touches your unaided rating)")

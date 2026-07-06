@@ -6,7 +6,7 @@ import { SOFT_LIMIT_BY_TIER, rngFor, type ExerciseGenerator } from "./types.js";
  * Debugging generator: a correct "sum amounts per category" implementation
  * with ONE randomly planted mutation. Both the correct and the buggy
  * semantics are simulated here in TypeScript, and the generator throws if
- * the planted bug wouldn't fail at least one generated test — a variant
+ * the planted bug wouldn't fail at least one generated test - a variant
  * with an invisible bug cannot exist by construction.
  */
 
@@ -123,7 +123,7 @@ function makeDebugGenerator(family: string, language: "python" | "javascript"): 
 
       const fnName = language === "python" ? "total_by_category" : "totalByCategory";
       const lowerText = lower
-        ? " Category names are case-insensitive — keys in the result must be lowercase."
+        ? " Category names are case-insensitive - keys in the result must be lowercase."
         : "";
       const raw: unknown = {
         id: `${family}-${seed}`,
@@ -135,7 +135,7 @@ function makeDebugGenerator(family: string, language: "python" | "javascript"): 
         prompt:
           `${fnName}(pairs) receives [category, amount] pairs and should return a ` +
           `${language === "python" ? "dict" : "object"} mapping each category to the SUM of its amounts.${lowerText}\n` +
-          `Users report wrong totals. Find and fix the bug — smallest change wins, don't rewrite from scratch.`,
+          `Users report wrong totals. Find and fix the bug - smallest change wins, don't rewrite from scratch.`,
         functionName: fnName,
         starterCode: language === "python" ? renderPython(mutation, lower) : renderJs(mutation, lower),
         softTimeLimitSeconds: SOFT_LIMIT_BY_TIER[tier] ?? 300,

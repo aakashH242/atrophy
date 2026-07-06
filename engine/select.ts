@@ -5,7 +5,7 @@ import { expectedScore } from "./scoring.js";
 
 /**
  * Information-optimal difficulty: prefer the tier where the predicted success
- * chance is nearest ~65% — hard enough to move the rating, kind enough to be
+ * chance is nearest ~65% - hard enough to move the rating, kind enough to be
  * winnable. (A comfortable 90%-win drill teaches the Elo almost nothing.)
  */
 export const TARGET_SUCCESS = 0.65;
@@ -36,7 +36,7 @@ export interface SelectOptions {
   statics: Exercise[];
   generators?: ExerciseGenerator[];
   axis: Axis;
-  /** Current axis rating — drives tier targeting. */
+  /** Current axis rating - drives tier targeting. */
   rating: number;
   /** Recently attempted exercise ids; their families are avoided when possible. */
   recentIds?: string[];

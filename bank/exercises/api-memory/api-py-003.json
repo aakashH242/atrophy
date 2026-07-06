@@ -5,7 +5,7 @@
   "language": "python",
   "tier": 2,
   "title": "Parse a config file",
-  "prompt": "Fill the blank — the same stdlib module name goes in both blanks.",
+  "prompt": "Fill the blank - the same stdlib module name goes in both blanks.",
   "softTimeLimitSeconds": 90,
   "snippet": "import ____\n\nwith open(\"config.json\") as f:\n    config = ____.load(f)",
   "acceptedAnswers": ["json"]

@@ -109,7 +109,7 @@ function makeCondGenerator(family: string, language: "python" | "javascript"): E
             : "";
       const what = agg === "sum" ? `the sum of the ${pred.phrase(k)}` : `how many ${pred.phrase(k)} appear`;
 
-      // test cases — computed from the reference, edge cases included
+      // test cases - computed from the reference, edge cases included
       const cases: number[][] = [
         randList(rng, 6, -9, 12),
         [],

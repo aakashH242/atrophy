@@ -35,7 +35,7 @@ const TIME_FACTOR_FLOOR = 0.25;
 
 /**
  * 1.0 up to the soft limit, then exponential decay with the soft limit as
- * half-life-ish scale, floored — a slow correct answer beats a fast wrong one.
+ * half-life-ish scale, floored - a slow correct answer beats a fast wrong one.
  */
 export function timeFactor(elapsedSeconds: number, softLimitSeconds: number): number {
   if (elapsedSeconds <= softLimitSeconds) return 1;
@@ -72,7 +72,7 @@ export function updateRating(state: RatingState, tier: number, score: number): R
   return { rating, rd: shrinkRd(state.rd), reps: state.reps + 1 };
 }
 
-/** Widen RD for idle time. Rating is untouched — we lose confidence, not skill. */
+/** Widen RD for idle time. Rating is untouched - we lose confidence, not skill. */
 export function decayRd(rd: number, idleDays: number): number {
   if (idleDays <= 0) return rd;
   return Math.min(MAX_RD, Math.sqrt(rd ** 2 + RD_GROWTH_C ** 2 * idleDays));

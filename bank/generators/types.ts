@@ -4,7 +4,7 @@ import { mulberry32, seedFromString, type Rng } from "../../engine/rng.js";
 /**
  * A generator is a hand-designed exercise *family* that renders endless
  * concrete variants. Determinism contract: generate(seed, tier) must return
- * an identical exercise for identical inputs — the seed is embedded in the
+ * an identical exercise for identical inputs - the seed is embedded in the
  * exercise id, so any recorded session is reproducible.
  */
 export interface ExerciseGenerator {

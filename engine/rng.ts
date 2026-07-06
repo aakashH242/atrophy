@@ -37,7 +37,7 @@ export function pick<T>(rng: Rng, arr: readonly T[]): T {
   return arr[Math.floor(rng() * arr.length)]!;
 }
 
-/** Fisher–Yates on a copy. */
+/** Fisher-Yates on a copy. */
 export function shuffle<T>(rng: Rng, arr: readonly T[]): T[] {
   const out = [...arr];
   for (let i = out.length - 1; i > 0; i--) {
@@ -52,7 +52,7 @@ export function sample<T>(rng: Rng, arr: readonly T[], n: number): T[] {
   return shuffle(rng, arr).slice(0, Math.min(n, arr.length));
 }
 
-/** Six lowercase hex chars — the seed suffix appended to generated exercise ids. */
+/** Six lowercase hex chars - the seed suffix appended to generated exercise ids. */
 export function hexSeed(rng: Rng): string {
   return Math.floor(rng() * 0xffffff)
     .toString(16)

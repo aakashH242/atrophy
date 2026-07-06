@@ -87,7 +87,7 @@ const PY_FACTS: ClozeFact[] = [
   {
     tier: 2,
     title: "Count everything at once",
-    prompt: "Fill the blank — the same collections class goes in both blanks.",
+    prompt: "Fill the blank - the same collections class goes in both blanks.",
     accepted: ["Counter"],
     render: (rng) => {
       const name = pick(rng, ["words", "tags", "events"]);
@@ -118,7 +118,7 @@ const PY_FACTS: ClozeFact[] = [
   {
     tier: 3,
     title: "Memoize the classic",
-    prompt: "Fill the blank — the same functools decorator (the one that accepts maxsize) goes in both blanks.",
+    prompt: "Fill the blank - the same functools decorator (the one that accepts maxsize) goes in both blanks.",
     accepted: ["lru_cache"],
     render: () =>
       `from functools import ____\n\n@____(maxsize=None)\ndef fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)`,
@@ -126,7 +126,7 @@ const PY_FACTS: ClozeFact[] = [
   {
     tier: 3,
     title: "All the digits",
-    prompt: "Fill the blank — the same stdlib module goes in both blanks.",
+    prompt: "Fill the blank - the same stdlib module goes in both blanks.",
     accepted: ["re"],
     render: (rng) => {
       const v = pick(rng, ["text", "line", "raw"]);

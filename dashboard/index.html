@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Atrophy — decay dashboard</title>
+<title>Atrophy - decay dashboard</title>
 <style>
   :root {
     --page:       #f9f9f7;
@@ -102,7 +102,7 @@
 <div class="wrap">
   <header>
     <h1>Atrophy</h1>
-    <p>Your unaided-skill baseline — the rating holds without evidence; the band is confidence decaying.</p>
+    <p>Your unaided-skill baseline - the rating holds without evidence; the band is confidence decaying.</p>
     <div class="stamp" id="stamp"></div>
   </header>
 
@@ -333,7 +333,7 @@ function render(data) {
     const agoText = ago === null ? "never drilled" : ago === 0 ? "today" : ago === 1 ? "yesterday" : ago + "d ago";
     div("tile",
       `<div class="label">${axis}</div>` +
-      `<div class="value">${r ? Math.round(r.rating) : "—"}</div>` +
+      `<div class="value">${r ? Math.round(r.rating) : "-"}</div>` +
       `<div class="meta"><span class="dot" style="background:${r ? "var(--series-1)" : "var(--grid)"}"></span>${state} · ${r ? r.reps : 0} reps · ${agoText}</div>`,
       tiles);
   }
@@ -345,7 +345,7 @@ function render(data) {
   // Decay curves
   const s1 = document.createElement("section");
   content.appendChild(s1);
-  s1.innerHTML = `<h2>Decay curves</h2><div class="sub">Rating (line) with the confidence band (±RD). The band widening is inactivity — the visible crack.</div>`;
+  s1.innerHTML = `<h2>Decay curves</h2><div class="sub">Rating (line) with the confidence band (±RD). The band widening is inactivity - the visible crack.</div>`;
   const grid = div("cards", "", s1);
   let any = false;
   for (const axis of AXES) {
@@ -369,7 +369,7 @@ function render(data) {
     </div>`;
   chartJobs.push(() => divergenceChart(card2, sessions));
   if (!sessions.some((s) => s.mode === "ai-on")) {
-    div("note", "No AI-assisted reps yet — run <code>atrophy drill --ai-on</code> monthly to plot the gap.", s2);
+    div("note", "No AI-assisted reps yet - run <code>atrophy drill --ai-on</code> monthly to plot the gap.", s2);
   }
 
   // Sessions table (the WCAG-clean twin of everything above)
@@ -385,7 +385,7 @@ function render(data) {
       <td class="num">${s.passed}/${s.total}</td>
       <td class="num">${Math.round(s.elapsed_seconds)}s</td>
       <td class="num">${s.score.toFixed(2)}</td>
-      <td class="num">${s.mode === "ai-off" ? Math.round(s.rating_after) : "—"}</td>
+      <td class="num">${s.mode === "ai-off" ? Math.round(s.rating_after) : "-"}</td>
     </tr>`).join("");
   s3.innerHTML += `<table>
     <thead><tr><th>when</th><th>axis</th><th>exercise</th><th>mode</th>

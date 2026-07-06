@@ -5,7 +5,7 @@ import { INITIAL_RATING, INITIAL_RD, decayRd, shrinkRd } from "./scoring.js";
 /**
  * One point on an axis's decay curve. Between reps the rating holds and the
  * RD (confidence band) widens; at each rep the rating jumps and the band
- * tightens. The dashboard just draws these — all decay math stays here.
+ * tightens. The dashboard just draws these - all decay math stays here.
  */
 export interface TimelinePoint {
   t: string;

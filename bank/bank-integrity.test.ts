@@ -27,7 +27,7 @@ describe("bank integrity", () => {
       const dir = scratch();
       writeFileSync(join(dir, solutionFileName(ex)), ex.starterCode, "utf8");
       const r = await grade(ex, dir);
-      expect(r.passed, `${ex.id}: planted bug passes all tests — no bug to find`).toBeLessThan(r.total);
+      expect(r.passed, `${ex.id}: planted bug passes all tests - no bug to find`).toBeLessThan(r.total);
       expect(r.passed + (r.harnessError ? 0 : 1), `${ex.id}: starter should at least load`).toBeGreaterThan(0);
     }
   }, 120_000);

@@ -52,7 +52,7 @@ function writeSolution(dir: string, ex: CodeExercise, code: string): void {
   writeFileSync(join(dir, solutionFileName(ex)), code, "utf8");
 }
 
-describe("grade — python", () => {
+describe("grade - python", () => {
   it("passes a correct solution", async () => {
     const dir = scratch();
     writeSolution(dir, pyEx, "def double(x):\n    return x * 2\n");
@@ -91,7 +91,7 @@ describe("grade — python", () => {
   }, 20_000);
 });
 
-describe("grade — javascript", () => {
+describe("grade - javascript", () => {
   it("passes a correct solution", async () => {
     const dir = scratch();
     writeSolution(dir, jsEx, "function double(x) { return x * 2; }\nmodule.exports = { double };\n");

@@ -85,7 +85,7 @@ describe("selectExercise", () => {
     expect(pick?.tier).toBe(2);
   });
 
-  it("avoids recently seen families — static and generated alike", () => {
+  it("avoids recently seen families - static and generated alike", () => {
     const g = fakeGen("sr-py-cond", [2]);
     const pick = selectExercise({
       statics,

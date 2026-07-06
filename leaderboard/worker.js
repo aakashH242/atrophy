@@ -1,5 +1,5 @@
 /**
- * Atrophy leaderboard — a deliberately tiny Cloudflare Worker + D1 API.
+ * Atrophy leaderboard - a deliberately tiny Cloudflare Worker + D1 API.
  *
  * Everything here is self-reported and opt-in: entries are anonymous handles,
  * write access is a per-entry bearer token minted on first publish, and the
