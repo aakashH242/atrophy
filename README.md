@@ -2,6 +2,8 @@
 
 **Measure what your brain is losing while AI does your work.**
 
+![Atrophy decay dashboard — per-axis rating curves with cracking confidence bands, and the unaided vs AI-assisted divergence chart](docs/assets/atrophy-dashboard.gif)
+
 The evidence is consistent across domains: [endoscopists' unaided detection rates dropped 28% → 22%](https://www.thelancet.com/journals/langas/article/PIIS2468-1253(25)00133-5/abstract) after routine AI exposure; [students with unrestricted GPT-4 scored 17% worse](https://www.pnas.org/doi/10.1073/pnas.2422633122) once access was removed; [experienced developers were 19% slower with AI while believing they were ~20% faster](https://arxiv.org/abs/2507.09089); and [AI-assisted engineers scored 17% lower on comprehension — with debugging declining most](https://www.anthropic.com/research/AI-assistance-coding-skills). There is no internal warning signal. Advice like "No-AI Days" exists everywhere; nothing *measures* whether you still can. ([Full citations](docs/research.md))
 
 Atrophy gives you a personal **unaided-skill baseline** and a **decay curve** — like a fitness app's resting heart rate, but for your coding brain. Short scheduled drills (5–10 min, AI off) are the workout; the chart is the reason you stay.
