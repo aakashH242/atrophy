@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pc from "picocolors";
@@ -208,11 +208,24 @@ async function baseline(store: Store, flags: DrillFlags): Promise<void> {
   stats(store);
 }
 
+function cliVersion(): string {
+  // package.json sits one level up in dev (cli/) and two up when built (dist/cli/)
+  for (const p of [join(__dirname, "..", "package.json"), join(__dirname, "..", "..", "package.json")]) {
+    try {
+      const pkg = JSON.parse(readFileSync(p, "utf8")) as { name?: string; version?: string };
+      if (pkg.name === "atrophy" && pkg.version) return pkg.version;
+    } catch {
+      /* try next candidate */
+    }
+  }
+  return "unknown";
+}
+
 const program = new Command();
 program
   .name("atrophy")
   .description("Measure what your brain is losing while AI does your work.")
-  .version("0.1.0");
+  .version(cliVersion());
 
 program
   .command("drill")
