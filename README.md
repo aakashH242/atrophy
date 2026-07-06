@@ -6,15 +6,16 @@ AI assistance makes you feel ~20% faster while comprehension drops ~17% — and 
 
 Atrophy gives you a personal **unaided-skill baseline** and a **decay curve** — like a fitness app's resting heart rate, but for your coding brain. Short scheduled drills (5–10 min, AI off) are the workout; the chart is the reason you stay.
 
-## Status: M1 — all five axes live
+## Status: M2 — the chart is live
 
 - ✅ `atrophy drill` — one unaided micro-drill; auto-picks your most-overdue axis. Temp dir + `AI-OFF.lock`, opens `$EDITOR`, soft time limits (going over shrinks the score; nothing explodes)
 - ✅ **Five drill kinds:** write-from-spec and fix-the-planted-bug (auto-graded by hidden tests in a sandboxed subprocess, retry loop) · predict-the-output (ground truth computed by actually running the snippet) · stdlib fill-in-the-blank · design outlines self-scored against a rubric
 - ✅ 31 exercises: syntax-recall (6), debugging (8), code-reading (8), api-memory (6), decomposition (3) — Python + JavaScript, tiers 1–3
 - ✅ `atrophy baseline` — one drill per axis to seed your profile (~25 min)
 - ✅ `atrophy stats` — per-axis Elo rating ± confidence (RD), recency, freshness; nags when you've coasted >3 days
-- ✅ `atrophy export` — JSON dump for the upcoming dashboard
-- 🔜 M2: decay dashboard · AI-on vs AI-off divergence chart (drill monthly with `--ai-on` to feed it)
+- ✅ `atrophy serve` — local decay dashboard: per-axis rating curves with a ±RD confidence band that visibly "cracks" while you coast, and the divergence chart — unaided vs AI-assisted scores drifting apart (feed it monthly with `atrophy drill --ai-on`)
+- ✅ `atrophy export` — the same JSON payload the dashboard reads
+- 🔜 M3: README citations, demo GIF, npm publish, launch post
 
 ## Install & run
 
@@ -28,6 +29,7 @@ node dist/cli/index.js baseline   # first session (~15 min today)
 node dist/cli/index.js drill      # one rep
 node dist/cli/index.js drill --axis syntax-recall --lang javascript
 node dist/cli/index.js stats
+node dist/cli/index.js serve             # decay dashboard at 127.0.0.1:4646
 node dist/cli/index.js export -o atrophy.json
 ```
 
