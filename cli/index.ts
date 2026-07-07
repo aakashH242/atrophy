@@ -8,8 +8,10 @@ import { allGenerators } from "../bank/generators/index.js";
 import { AXES, loadBank, type Axis, type Exercise, type Language } from "../bank/schema.js";
 import { buildPayload, startServer } from "./serve.js";
 import { autoSync, isRegistered, maybePrintPublishHint, publishCommand } from "./publish.js";
+import { detectAssistants } from "../engine/guard.js";
 import { selectExercise } from "../engine/select.js";
 import { runDrill } from "../engine/session.js";
+import { computeStreak } from "../engine/streak.js";
 import {
   freshness,
   nextTier,
@@ -82,6 +84,16 @@ async function drillOnce(store: Store, flags: DrillFlags): Promise<boolean> {
   if (!ex) {
     console.error(pc.red(`no exercises in the bank for axis "${axis}"${flags.lang ? ` (${flags.lang})` : ""} yet`));
     return false;
+  }
+
+  if (mode === "ai-off" && !flags.solution) {
+    const running = await detectAssistants();
+    if (running.length > 0) {
+      console.log(
+        pc.yellow(`\nHeads up: ${running.join(", ")} ${running.length === 1 ? "is" : "are"} running.`) +
+          pc.dim(" AI off is the deal - close them, or own the asterisk on your number. (Warned, never blocked.)"),
+      );
+    }
   }
 
   const outcome = await runDrill(ex, flags.solution);
@@ -176,7 +188,10 @@ function stats(store: Store): void {
   if (!anyReps) {
     console.log(pc.dim("\n  No reps yet. Run ") + pc.cyan("atrophy baseline") + pc.dim(" to set your unaided baseline."));
   } else {
-    console.log(pc.dim("\n  RD widens while you coast - that's confidence decaying, not the score."));
+    const streak = computeStreak(store.allSessions());
+    const streakText = `streak ${streak.weeks} week${streak.weeks === 1 ? "" : "s"} · this week ${streak.thisWeekReps}/${streak.target} reps`;
+    console.log("\n  " + (streak.thisWeekReps >= streak.target ? pc.green(streakText) : pc.yellow(streakText)));
+    console.log(pc.dim("  RD widens while you coast - that's confidence decaying, not the score."));
     const last = store.lastDrillTs();
     const idleDays = last ? (Date.now() - Date.parse(last)) / 86_400_000 : Infinity;
     if (idleDays > 3) {

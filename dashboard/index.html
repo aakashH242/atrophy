@@ -323,6 +323,15 @@ function render(data) {
 
   // KPI tiles
   const tiles = div("tiles", "", content);
+  if (data.streak) {
+    const st = data.streak;
+    const onPace = st.thisWeekReps >= st.target;
+    div("tile",
+      `<div class="label">week streak</div>` +
+      `<div class="value">${st.weeks}<span style="font-size:16px;color:var(--ink-2)"> wk</span></div>` +
+      `<div class="meta"><span class="dot" style="background:${onPace ? "var(--series-2)" : "var(--grid)"}"></span>this week ${st.thisWeekReps}/${st.target} reps</div>`,
+      tiles);
+  }
   for (const axis of AXES) {
     const r = ratingByAxis[axis];
     const tl = (data.timelines || {})[axis] || [];
