@@ -131,7 +131,7 @@ atrophy baseline
 | `atrophy drill --lang python` | Only Python (or `javascript`) exercises |
 | `atrophy drill --ai-on` | Monthly comparison rep with AI allowed |
 | `atrophy publish --handle you` | Opt in to the [public leaderboard](https://ashutosh-rath02.github.io/atrophy/leaderboard.html); afterwards every drill syncs automatically (`--stop` opts out) |
-| `atrophy stats` | Ratings table in the terminal |
+| `atrophy stats` | Ratings table and week streak in the terminal |
 | `atrophy serve` | Dashboard at `127.0.0.1:4646` |
 | `atrophy export -o out.json` | Dump all your data as JSON |
 
@@ -148,9 +148,10 @@ location if you want it in a dotfiles repo or synced folder.
 - Drilling makes you better at drills. That's fine - the drill *is* the
   maintenance - but it's another reason the interesting number is the
   unaided-vs-AI gap, not your raw rating.
-- "AI off" is an honor system. The drill folder contains an `AI-OFF.lock`
-  note as a reminder; you'd only be cheating your own chart. Assistant
-  process detection is planned, as a warning, never a block.
+- "AI off" is an honor system, actively assisted: starting an unaided drill
+  while a known AI assistant is running (Copilot, Cursor, Claude, Windsurf,
+  Codeium, Tabnine, Ollama, LM Studio, ChatGPT, Aider) prints a warning that
+  names it. Warned, never blocked - you'd only be cheating your own chart.
 
 ## Contributing & development
 
@@ -166,8 +167,8 @@ New exercises are the most welcome contribution: one JSON file under
 planted bug actually fails a test and every code-reading snippet runs
 deterministically, so a broken exercise can't merge.
 
-Roadmap: editor-plugin detection of AI assistants, LLM-judged decomposition
-drills, more languages, spaced-repetition scheduling (FSRS).
+Roadmap: LLM-judged decomposition drills, more languages, spaced-repetition
+scheduling (FSRS), per-axis leaderboards.
 
 ## License
 
