@@ -10,6 +10,7 @@ import {
   normalizeClozeAnswer,
   normalizeOutput,
   solutionFileName,
+  WHITESPACE_PARTIAL_CREDIT,
 } from "./grader.js";
 
 const dirs: string[] = [];
@@ -176,6 +177,28 @@ describe("gradePrediction", () => {
     const r = await gradePrediction(ex, scratch(), "anything");
     expect(r.correct).toBe(false);
     expect(r.error).toMatch(/snippet failed/);
+  });
+
+  it("exact match earns full credit", async () => {
+    const r = await gradePrediction(predictPy, scratch(), "3\nTrue\n");
+    expect(r.correct).toBe(true);
+    expect(r.credit).toBe(1);
+    expect(r.whitespaceOnly).toBe(false);
+  });
+
+  it("gives partial credit for a whitespace-only miss (the [5,4,79] case)", async () => {
+    const ex: PredictExercise = { ...predictPy, id: "cr-py-903", snippet: "print([5, 4, 79])\n" };
+    const r = await gradePrediction(ex, scratch(), "[5,4,79]");
+    expect(r.correct).toBe(false);
+    expect(r.whitespaceOnly).toBe(true);
+    expect(r.credit).toBe(WHITESPACE_PARTIAL_CREDIT);
+    expect(r.actual).toBe("[5, 4, 79]");
+  });
+
+  it("a real content mismatch earns zero, not partial", async () => {
+    const r = await gradePrediction(predictPy, scratch(), "2\nFalse");
+    expect(r.credit).toBe(0);
+    expect(r.whitespaceOnly).toBe(false);
   });
 });
 
