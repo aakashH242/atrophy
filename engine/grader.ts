@@ -178,11 +178,24 @@ export function normalizeOutput(s: string): string {
 }
 
 export interface PredictionResult {
+  /** Exact (normalized) match - full credit. */
   correct: boolean;
+  /** Credit awarded: 1 exact, WHITESPACE_PARTIAL_CREDIT whitespace-only, else 0. */
+  credit: number;
+  /** True when only whitespace/layout differed: right content, wrong spacing. */
+  whitespaceOnly: boolean;
   /** The snippet's real stdout (ground truth), when it ran cleanly. */
   actual?: string;
   /** The snippet itself failed to run - a bank bug, not a user mistake. */
   error?: string;
+}
+
+/** Partial credit for a right-content, wrong-whitespace code-reading answer. */
+export const WHITESPACE_PARTIAL_CREDIT = 0.5;
+
+/** Strip every whitespace character, for the whitespace-only near-miss check. */
+export function stripWhitespace(s: string): string {
+  return s.replace(/\s+/g, "");
 }
 
 /**
@@ -202,14 +215,28 @@ export async function gradePrediction(
   try {
     result = await run(cmd, [file], { cwd: dir, timeoutMs: ex.testTimeoutMs });
   } catch (err) {
-    return { correct: false, error: `could not start ${cmd}: ${(err as Error).message}` };
+    return { correct: false, credit: 0, whitespaceOnly: false, error: `could not start ${cmd}: ${(err as Error).message}` };
   }
   if (result.timedOut || result.exitCode !== 0) {
     const detail = result.timedOut ? "timed out" : result.stderr.trim().slice(0, 500);
-    return { correct: false, error: `snippet failed to run (${detail}) - please report this exercise` };
+    return {
+      correct: false,
+      credit: 0,
+      whitespaceOnly: false,
+      error: `snippet failed to run (${detail}) - please report this exercise`,
+    };
   }
   const actual = normalizeOutput(result.stdout);
-  return { correct: actual === normalizeOutput(prediction), actual };
+  if (actual === normalizeOutput(prediction)) {
+    return { correct: true, credit: 1, whitespaceOnly: false, actual };
+  }
+  // Near-miss: identical once all whitespace is removed means the reader got the
+  // content right and only the layout (e.g. Python's "[5, 4, 79]" spacing) wrong.
+  const stripped = stripWhitespace(actual);
+  if (stripped !== "" && stripped === stripWhitespace(prediction)) {
+    return { correct: false, credit: WHITESPACE_PARTIAL_CREDIT, whitespaceOnly: true, actual };
+  }
+  return { correct: false, credit: 0, whitespaceOnly: false, actual };
 }
 
 /** Trim + collapse inner whitespace; cloze answers stay case-sensitive (API names are). */

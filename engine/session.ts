@@ -303,7 +303,7 @@ async function predictDrill(ex: PredictExercise, solutionOverride?: string): Pro
     if (solutionOverride) {
       const prediction = readFileSync(solutionOverride, "utf8");
       const r = await gradePrediction(ex, dir, prediction);
-      return makeOutcome(ex, r.correct ? 1 : 0, elapsed());
+      return makeOutcome(ex, r.credit, elapsed());
     }
 
     printHeader(ex);
@@ -325,11 +325,20 @@ async function predictDrill(ex: PredictExercise, solutionOverride?: string): Pro
       }
       if (r.correct) {
         console.log(pc.green("\n✓ exact match") + pc.dim(` in ${Math.round(elapsed())}s`));
+      } else if (r.whitespaceOnly) {
+        console.log(
+          pc.yellow("\n≈ Almost: the content is right, but the stdout formatting differs.") +
+            pc.dim(" partial credit."),
+        );
+        console.log(
+          pc.dim("Exact output matters here - your answer differed only in whitespace/layout. Actual:"),
+        );
+        console.log(pc.dim(r.actual ?? ""));
       } else {
         console.log(pc.red("\n✗ not quite.") + " Actual output:");
         console.log(pc.dim(r.actual ?? ""));
       }
-      return makeOutcome(ex, r.correct ? 1 : 0, elapsed());
+      return makeOutcome(ex, r.credit, elapsed());
     });
   });
 }
