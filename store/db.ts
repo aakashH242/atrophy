@@ -157,6 +157,16 @@ export class Store {
     return this.db.prepare<[], AxisRow>("SELECT * FROM ratings ORDER BY axis").all();
   }
 
+  /** Online backup of the whole database to a file (destination dir must exist). */
+  async backupTo(dest: string): Promise<void> {
+    await this.db.backup(dest);
+  }
+
+  /** Erase all drill data (ratings + sessions). Schema is left in place. */
+  clear(): void {
+    this.db.exec("DELETE FROM sessions; DELETE FROM ratings;");
+  }
+
   close(): void {
     this.db.close();
   }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pc from "picocolors";
@@ -261,6 +261,12 @@ function stats(store: Store): void {
   console.log();
 }
 
+/** Timestamped backup path next to the database (filename-safe on Windows). */
+function defaultBackupPath(): string {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return join(dirname(defaultDbPath()), "backups", `atrophy-${stamp}.db`);
+}
+
 function dashboardHtmlPath(): string {
   const candidates = [
     join(__dirname, "..", "dashboard", "index.html"), // tsx dev: cli/../dashboard
@@ -410,6 +416,54 @@ program
       bd = null;
     }
     process.exitCode = await runDoctor({ bankDir: bd, dbPath: defaultDbPath() });
+  });
+
+program
+  .command("backup")
+  .description("copy your SQLite database to a backup file you own")
+  .option("-o, --out <file>", "destination path (default: ~/.atrophy/backups/)")
+  .action(async (flags: { out?: string }) => {
+    const store = new Store();
+    try {
+      const dest = flags.out ?? defaultBackupPath();
+      mkdirSync(dirname(dest), { recursive: true });
+      await store.backupTo(dest);
+      console.log(pc.green(`backed up to ${dest}`));
+    } catch (err) {
+      console.error(pc.red(`backup failed: ${(err as Error).message}`));
+      process.exitCode = 1;
+    } finally {
+      store.close();
+    }
+  });
+
+program
+  .command("reset")
+  .description("erase all your drill data (a backup is written first)")
+  .option("--yes", "confirm the erase (nothing happens without this)")
+  .action(async (flags: { yes?: boolean }) => {
+    const store = new Store();
+    try {
+      if (!flags.yes) {
+        console.log(
+          pc.yellow("This erases every rating and session.") +
+            pc.dim(" A backup is saved first. Re-run with ") +
+            pc.cyan("--yes") +
+            pc.dim(" to proceed."),
+        );
+        return;
+      }
+      const dest = defaultBackupPath();
+      mkdirSync(dirname(dest), { recursive: true });
+      await store.backupTo(dest);
+      store.clear();
+      console.log(pc.green("all drill data erased.") + pc.dim(` backup saved to ${dest}`));
+    } catch (err) {
+      console.error(pc.red(`reset failed: ${(err as Error).message}`));
+      process.exitCode = 1;
+    } finally {
+      store.close();
+    }
   });
 
 program.parseAsync().catch((err) => {
