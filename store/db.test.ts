@@ -60,4 +60,34 @@ describe("Store", () => {
     expect(recent.map((s) => s.exercise_id)).toEqual(["sr-py-002", "sr-py-001"]);
     expect(store.allSessions()).toHaveLength(2);
   });
+
+  it("backs up to a re-openable copy, and clear empties the store", async () => {
+    store.saveRating("debugging", { rating: 1300, rd: 100, reps: 4 }, 2);
+    store.recordSession({
+      ts: "2026-07-01T10:00:00Z",
+      exercise_id: "x",
+      axis: "debugging",
+      language: "python",
+      tier: 1,
+      mode: "ai-off",
+      passed: 1,
+      total: 1,
+      elapsed_seconds: 10,
+      score: 1,
+      rating_before: 1284,
+      rating_after: 1300,
+    });
+
+    const dest = join(dir, "backup.db");
+    await store.backupTo(dest);
+
+    const copy = new Store(dest);
+    expect(copy.allSessions()).toHaveLength(1);
+    expect(copy.getRating("debugging").rating).toBe(1300);
+    copy.close();
+
+    store.clear();
+    expect(store.allSessions()).toHaveLength(0);
+    expect(store.getRating("debugging").reps).toBe(0);
+  });
 });
