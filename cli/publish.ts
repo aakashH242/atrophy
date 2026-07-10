@@ -12,6 +12,16 @@ export const DEFAULT_LEADERBOARD_URL = "https://atrophy-leaderboard.ashutosh123r
 /** One real rep is enough - zero reps would be an all-default 1200 row (noise). */
 export const MIN_REPS_TO_PUBLISH = 1;
 
+/**
+ * Global kill-switch for every leaderboard network call. Set ATROPHY_NO_SYNC
+ * for tests, CI, and dry runs against a throwaway DB, so a dev session can
+ * never push junk to the public board under your real handle.
+ */
+export function syncDisabled(): boolean {
+  const v = process.env.ATROPHY_NO_SYNC;
+  return v === "1" || v === "true";
+}
+
 export interface Snapshot {
   overall: number;
   reps: number;
@@ -73,6 +83,7 @@ export function isRegistered(): boolean {
  * failure - a dead network must never get between the user and their rep.
  */
 export async function autoSync(store: Store): Promise<void> {
+  if (syncDisabled()) return;
   const lb = readConfig().leaderboard;
   if (!lb?.token || !lb.handle) return;
   const snap = buildSnapshot(store);
@@ -121,6 +132,14 @@ export async function publishCommand(
     } else {
       console.log(pc.dim("you weren't registered - nothing to stop"));
     }
+    return;
+  }
+  if (syncDisabled()) {
+    console.error(
+      pc.red("leaderboard sync is disabled (ATROPHY_NO_SYNC is set)") +
+        pc.dim(" - unset it to publish"),
+    );
+    process.exitCode = 1;
     return;
   }
   const snap = buildSnapshot(store);

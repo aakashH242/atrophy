@@ -1,10 +1,10 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { INITIAL_RATING } from "../engine/scoring.js";
 import { Store } from "../store/db.js";
-import { buildSnapshot } from "./publish.js";
+import { autoSync, buildSnapshot, syncDisabled } from "./publish.js";
 
 let dir: string;
 let store: Store;
@@ -40,5 +40,37 @@ describe("buildSnapshot", () => {
     expect(snap.overall).toBe(INITIAL_RATING);
     expect(snap.reps).toBe(0);
     expect(snap.axes).toEqual({});
+  });
+});
+
+describe("ATROPHY_NO_SYNC kill-switch", () => {
+  afterEach(() => {
+    delete process.env.ATROPHY_NO_SYNC;
+    delete process.env.ATROPHY_CONFIG;
+  });
+
+  it("syncDisabled reflects the env var", () => {
+    delete process.env.ATROPHY_NO_SYNC;
+    expect(syncDisabled()).toBe(false);
+    process.env.ATROPHY_NO_SYNC = "1";
+    expect(syncDisabled()).toBe(true);
+    process.env.ATROPHY_NO_SYNC = "true";
+    expect(syncDisabled()).toBe(true);
+    process.env.ATROPHY_NO_SYNC = "0";
+    expect(syncDisabled()).toBe(false);
+  });
+
+  it("autoSync makes no network call when disabled, even while registered", async () => {
+    // a fully-registered config that would otherwise POST to the board
+    const cfg = join(dir, "config.json");
+    writeFileSync(cfg, JSON.stringify({ leaderboard: { token: "tok", handle: "me" } }));
+    process.env.ATROPHY_CONFIG = cfg;
+    process.env.ATROPHY_NO_SYNC = "1";
+    store.saveRating("syntax-recall", { rating: 1300, rd: 100, reps: 3 }, 2);
+
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    await autoSync(store);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
   });
 });
