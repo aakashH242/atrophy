@@ -82,6 +82,34 @@ function printHeader(ex: Exercise): void {
   console.log(pc.dim("─".repeat(60)));
 }
 
+/** Print an exercise without running or recording it (`drill --show`). */
+export function previewExercise(ex: Exercise): void {
+  printHeader(ex);
+  switch (ex.kind) {
+    case "write":
+    case "fix":
+      console.log(pc.dim("starter code:"));
+      console.log(ex.starterCode.trim());
+      break;
+    case "predict-output":
+      console.log(ex.snippet.trimEnd());
+      console.log(pc.dim("─".repeat(60)));
+      console.log(pc.dim("(you would predict this program's exact stdout)"));
+      break;
+    case "cloze":
+      console.log(ex.snippet.trimEnd());
+      console.log(pc.dim("─".repeat(60)));
+      console.log(pc.dim("(you would fill the ____ blank)"));
+      break;
+    case "outline":
+      console.log(pc.dim(`(you would outline an approach, self-scored against ${ex.rubric.length} rubric points)`));
+      break;
+  }
+  console.log(
+    pc.dim(`\nid: ${ex.id}  ·  soft limit ${Math.round(ex.softTimeLimitSeconds / 60)} min  ·  preview only, not graded`),
+  );
+}
+
 function printTimer(ex: Exercise): void {
   console.log(
     pc.yellow("AI off. ") +

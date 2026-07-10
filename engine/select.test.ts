@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ExerciseGenerator } from "../bank/generators/types.js";
 import type { Exercise } from "../bank/schema.js";
-import { familyOf, selectExercise, targetTier } from "./select.js";
+import { familyOf, resolveExercise, selectExercise, targetTier } from "./select.js";
 
 function ex(id: string, tier: number, language: "python" | "javascript" = "python"): Exercise {
   return {
@@ -58,6 +58,35 @@ describe("familyOf", () => {
     expect(familyOf("sr-py-cond-1a2b3c")).toBe("sr-py-cond");
     expect(familyOf("sr-py-001")).toBe("sr-py-001");
     expect(familyOf("api-js-gen-0dd001")).toBe("api-js-gen");
+  });
+});
+
+describe("resolveExercise", () => {
+  const gens = [fakeGen("sr-py-cond", [1, 2])];
+
+  it("resolves a static bank id", () => {
+    expect(resolveExercise("sr-py-002", { statics })?.id).toBe("sr-py-002");
+  });
+
+  it("reconstructs a generated exercise at the requested tier", () => {
+    const got = resolveExercise("sr-py-cond-1a2b3c", { statics, generators: gens, tier: 2 });
+    expect(got?.id).toBe("sr-py-cond-1a2b3c");
+    expect(got?.tier).toBe(2);
+  });
+
+  it("defaults to the family's first tier when none is given", () => {
+    expect(resolveExercise("sr-py-cond-1a2b3c", { statics, generators: gens })?.tier).toBe(1);
+  });
+
+  it("prefers a static id even if it looks generated", () => {
+    const withLookalike = [...statics, ex("sr-py-abc123", 3)];
+    const got = resolveExercise("sr-py-abc123", { statics: withLookalike, generators: gens });
+    expect(got?.tier).toBe(3); // the static, not a generated tier-1 default
+  });
+
+  it("returns undefined for an unknown id or missing family", () => {
+    expect(resolveExercise("nope-000000", { statics, generators: gens })).toBeUndefined();
+    expect(resolveExercise("totally-unknown", { statics })).toBeUndefined();
   });
 });
 

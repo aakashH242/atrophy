@@ -9,8 +9,8 @@ import { AXES, loadBank, type Axis, type Exercise, type Language } from "../bank
 import { buildPayload, startServer } from "./serve.js";
 import { autoSync, isRegistered, maybePrintPublishHint, publishCommand } from "./publish.js";
 import { detectAssistants } from "../engine/guard.js";
-import { selectExercise } from "../engine/select.js";
-import { runDrill } from "../engine/session.js";
+import { resolveExercise, selectExercise } from "../engine/select.js";
+import { previewExercise, runDrill } from "../engine/session.js";
 import { computeStreak } from "../engine/streak.js";
 import {
   freshness,
@@ -39,6 +39,9 @@ interface DrillFlags {
   lang?: string;
   solution?: string;
   aiOn?: boolean;
+  exercise?: string;
+  tier?: string;
+  show?: boolean;
 }
 
 function parseAxis(value: string): Axis {
@@ -67,24 +70,57 @@ function dueAxis(store: Store, bank: Exercise[]): Axis {
 
 async function drillOnce(store: Store, flags: DrillFlags): Promise<boolean> {
   const bank = loadBank(bankDir());
-  const axis = flags.axis ? parseAxis(flags.axis) : dueAxis(store, bank);
   const language = flags.lang as Language | undefined;
   const mode = flags.aiOn ? "ai-on" : "ai-off";
 
-  const current = store.getRating(axis);
-  const recent = store.recentSessions(axis, 6).map((s) => s.exercise_id);
-  const ex = selectExercise({
-    statics: bank,
-    generators: allGenerators,
-    axis,
-    rating: current.rating,
-    recentIds: recent,
-    language,
-  });
-  if (!ex) {
-    console.error(pc.red(`no exercises in the bank for axis "${axis}"${flags.lang ? ` (${flags.lang})` : ""} yet`));
-    return false;
+  let ex: Exercise | undefined;
+  if (flags.exercise) {
+    // Replay a specific exercise. Tier is not in the id, so take it from --tier,
+    // else from this exercise's own history, else the family's first tier.
+    let tierHint: number | undefined;
+    if (flags.tier !== undefined) {
+      const t = Number.parseInt(flags.tier, 10);
+      if (!Number.isInteger(t) || t < 1 || t > 3) {
+        console.error(pc.red("--tier must be 1, 2 or 3"));
+        return false;
+      }
+      tierHint = t;
+    } else {
+      tierHint = store.tierForExercise(flags.exercise) ?? undefined;
+    }
+    ex = resolveExercise(flags.exercise, { statics: bank, generators: allGenerators, tier: tierHint });
+    if (!ex) {
+      console.error(
+        pc.red(`unknown exercise "${flags.exercise}"`) +
+          pc.dim(" - use a bank id (e.g. sr-py-001) or a generated family-seed id"),
+      );
+      return false;
+    }
+  } else {
+    const axis = flags.axis ? parseAxis(flags.axis) : dueAxis(store, bank);
+    const recent = store.recentSessions(axis, 6).map((s) => s.exercise_id);
+    ex = selectExercise({
+      statics: bank,
+      generators: allGenerators,
+      axis,
+      rating: store.getRating(axis).rating,
+      recentIds: recent,
+      language,
+    });
+    if (!ex) {
+      console.error(pc.red(`no exercises in the bank for axis "${axis}"${flags.lang ? ` (${flags.lang})` : ""} yet`));
+      return false;
+    }
   }
+
+  // Preview only: print the exercise and stop, nothing recorded.
+  if (flags.show) {
+    previewExercise(ex);
+    return true;
+  }
+
+  const axis = ex.axis;
+  const current = store.getRating(axis);
 
   if (mode === "ai-off" && !flags.solution) {
     const running = await detectAssistants();
@@ -264,6 +300,9 @@ program
   .option("-l, --lang <language>", "python or javascript")
   .option("--ai-on", "monthly comparison rep WITH your AI tools (plots the gap, never touches your unaided rating)")
   .option("--solution <file>", "non-interactive: grade this file as the submission (scripting/tests)")
+  .option("--exercise <id>", "replay a specific exercise (bank id or generated family-seed id)")
+  .option("--tier <n>", "tier 1-3 for a generated --exercise not in your history")
+  .option("--show", "print the exercise without grading (preview)")
   .action(async (flags: DrillFlags) => {
     const store = new Store();
     try {

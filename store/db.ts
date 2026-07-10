@@ -127,6 +127,16 @@ export class Store {
       .all(axis, limit);
   }
 
+  /** Tier the given exercise was most recently played at (for exact replay). */
+  tierForExercise(exerciseId: string): number | null {
+    const row = this.db
+      .prepare<[string], { tier: number }>(
+        "SELECT tier FROM sessions WHERE exercise_id = ? ORDER BY ts DESC, id DESC LIMIT 1",
+      )
+      .get(exerciseId);
+    return row?.tier ?? null;
+  }
+
   /** Timestamp of the most recent unaided rep across all axes (for the nag). */
   lastDrillTs(): string | null {
     const row = this.db

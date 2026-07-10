@@ -25,8 +25,33 @@ export function targetTier(rating: number): number {
 
 /** Generated ids end in "-<6 hex>": strip the seed to get the family. */
 export function familyOf(exerciseId: string): string {
-  const m = /^(.+)-[0-9a-f]{6}$/.exec(exerciseId);
+  const m = GENERATED_ID.exec(exerciseId);
   return m ? m[1]! : exerciseId;
+}
+
+/** Generated exercise id shape: "<family>-<6 hex seed>". */
+const GENERATED_ID = /^(.+)-([0-9a-f]{6})$/;
+
+/**
+ * Resolve a specific exercise by id (for replay / preview / scripting).
+ * A static bank id loads directly; a generated "family-seed" id is rebuilt from
+ * its family generator. Tier is not encoded in the id, so pass the tier the
+ * exercise was played at (from the session row) for an exact reproduction;
+ * otherwise the family's first tier is used.
+ */
+export function resolveExercise(
+  id: string,
+  opts: { statics: Exercise[]; generators?: ExerciseGenerator[]; tier?: number },
+): Exercise | undefined {
+  const stat = opts.statics.find((e) => e.id === id);
+  if (stat) return stat; // static ids win, even if they look generated
+  const m = GENERATED_ID.exec(id);
+  if (!m) return undefined;
+  const [, family, seed] = m;
+  const gen = (opts.generators ?? []).find((g) => g.family === family);
+  if (!gen) return undefined;
+  const tier = opts.tier ?? gen.tiers[0]!;
+  return gen.generate(seed!, tier);
 }
 
 /** A generator family offers many variants, so it outweighs one static file. */
