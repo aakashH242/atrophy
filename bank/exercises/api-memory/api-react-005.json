@@ -1,0 +1,12 @@
+{
+  "id": "api-react-005",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Memoized Value Hook",
+  "prompt": "Fill the blank: This hook caches the *result* of an expensive calculation between renders so it doesn't recalculate on every render.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const expensiveResult = ____(() => computeValue(a, b), [a, b]);",
+  "acceptedAnswers": ["useMemo"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "api-react-004",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Mutable Reference Hook",
+  "prompt": "Fill the blank: This hook returns a mutable ref object whose .current property persists across the entire lifecycle without triggering re-renders.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const inputEl = ____(null);\nconst focusInput = () => inputEl.current.focus();",
+  "acceptedAnswers": ["useRef"]
+}

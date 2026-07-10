@@ -1,0 +1,12 @@
+{
+  "id": "api-react-001",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "State Management Hook",
+  "prompt": "Fill the blank: This basic React hook allows functional components to declare and update local state variables.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const [count, setCount] = ____(0);\nsetCount(count + 1);",
+  "acceptedAnswers": ["useState"]
+}
