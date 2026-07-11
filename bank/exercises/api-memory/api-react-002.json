@@ -1,0 +1,12 @@
+{
+  "id": "api-react-002",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Side Effects Hook",
+  "prompt": "Fill the blank: This hook lets you perform side effects (like data fetching or manual DOM mutations) in functional components.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "____(() => {\n  document.title = `Clicked ${count} times`;\n}, [count]);",
+  "acceptedAnswers": ["useEffect"]
+}

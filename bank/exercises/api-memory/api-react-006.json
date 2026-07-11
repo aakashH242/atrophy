@@ -1,0 +1,12 @@
+{
+  "id": "api-react-006",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Memoized Callback Hook",
+  "prompt": "Fill the blank: This hook caches a *function definition* between re-renders to prevent unnecessary child component updates.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const memoizedCallback = ____(() => {\n  doSomething(a, b);\n}, [a, b]);",
+  "acceptedAnswers": ["useCallback"]
+}

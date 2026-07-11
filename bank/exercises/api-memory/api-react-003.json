@@ -1,0 +1,12 @@
+{
+  "id": "api-react-003",
+  "kind": "cloze",
+  "axis": "api-memory",
+  "language": "javascript",
+  "tier": 1,
+  "title": "Consume Context Hook",
+  "prompt": "Fill the blank: This hook accepts a context object and returns the current context value for that context.",
+  "softTimeLimitSeconds": 60,
+  "snippet": "const theme = ____(ThemeContext);\n// returns the current value from the closest matching Provider",
+  "acceptedAnswers": ["useContext"]
+}
