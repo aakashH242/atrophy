@@ -168,7 +168,7 @@ planted bug actually fails a test and every code-reading snippet runs
 deterministically, so a broken exercise can't merge.
 
 Roadmap: LLM-judged decomposition drills, more languages, spaced-repetition
-scheduling (FSRS), per-axis leaderboards.
+scheduling (FSRS), per-axis leaderboards. More to be added soon.
 
 ## License
 
